@@ -14,7 +14,7 @@ class Config(object):
     SECRET_KEY = os.getenv('SECRET_KEY', 'S#perS3crEt_007')
 
     # This will create a file in <app> FOLDER
-    SQLALCHEMY_DATABASE_URI = 'mysql://naya:NayaPass1!@35.226.141.122/temi_v3'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
 
     # Assets Management
