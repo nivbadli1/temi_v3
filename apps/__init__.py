@@ -5,16 +5,19 @@ Copyright (c) 2019 - present AppSeed.us
 
 from flask import Flask
 from flask_login import LoginManager
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from importlib import import_module
 
 
 db = SQLAlchemy()
+migrate = Migrate()
 login_manager = LoginManager()
 
 
 def register_extensions(app):
     db.init_app(app)
+    migrate.init_app(app,db)
     login_manager.init_app(app)
 
 

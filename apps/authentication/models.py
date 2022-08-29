@@ -36,6 +36,127 @@ class Users(db.Model, UserMixin):
         return str(self.username)
 
 
+class Patient(db.Model):
+    __tablename__ = "patients"
+
+    patient_id = db.Column(db.Integer, primary_key=True)
+    f_name = db.Column(db.String(50))
+    l_name = db.Column(db.String(50))
+    bed = db.Column(db.Integer)
+    department = db.Column(db.Integer)
+    max_calls = db.Column(db.Integer)
+    contacts = db.relationship('Contact', backref='patient', lazy='dynamic')
+    events = db.relationship('Event', backref='patient', lazy='dynamic')
+
+    def __init__(self, patient_id, f_name, l_name, bed, department, max_calls):
+        self.patient_id = patient_id
+        self.f_name = f_name
+        self.l_name = l_name
+        self.bed = bed
+        self.department = department
+        self.max_calls = max_calls
+
+    def get_patient_contacts(self):
+        for contact in self.contacts:
+            print(contact.id, contact.f_name)
+
+    def __repr__(self):
+        return "Patient(patient_id='%s', l_name='%s', f_name='%s', bed='%s', department='%s', max_calls='%s')" % (
+            self.patient_id, self.l_name, self.f_name, self.bed, self.department, self.max_calls)
+
+
+class Contact(db.Model):
+    __tablename__ = 'contacts'
+
+    contact_id = db.Column(db.Integer, primary_key=True)
+    f_name = db.Column(db.String(50))
+    l_name = db.Column(db.String(50))
+    phone = db.Column(db.String(50))
+    mail = db.Column(db.String(50))
+    priority = db.Column(db.Integer)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id', ondelete='CASCADE', onupdate='CASCADE'),
+                           index=True)
+    events = db.relationship('Event', backref='contact', lazy='dynamic')
+    contacts_times = db.relationship('ContactsTime', backref='contact', lazy='dynamic')
+
+    def __init__(self, patient_id, f_name, l_name, phone, mail, priority):
+        self.patient_id = patient_id
+        self.f_name = f_name
+        self.l_name = l_name
+        self.phone = phone
+        self.mail = mail
+        self.priority = priority
+
+    def __repr__(self):
+        return 'Contact(%r, %r, %r, %r, %r)' % (self.f_name, self.l_name, self.phone, self.mail, self.patient_id)
+
+
+class ContactsTime(db.Model):
+    __tablename__ = 'contacts_times'
+
+    contact_id = db.Column(db.Integer, db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'))
+    day = db.Column(db.Integer, primary_key=True, nullable=False)
+    _from = db.Column('from', db.Time, primary_key=True, nullable=False)
+    to = db.Column(db.Time, primary_key=True, nullable=False)
+
+    def __init__(self, contact_id, day, _from, to):
+        self.contact_id = contact_id
+        self.day = day
+        self._from = _from
+        self.to = to
+
+    def __repr__(self):
+        return "ContactsTime(contact_id='%s', day='%s', _from='%s', to='%s')" % (
+            self.contact_id, self.day, self._from, self.to)
+
+
+class Department(db.Model):
+    __tablename__ = 'departments'
+
+    num = db.Column(db.Integer, primary_key=True, nullable=False)
+    _from = db.Column('from', db.Time, primary_key=True, nullable=False)
+    to = db.Column(db.Time, primary_key=True, nullable=False)
+    day = db.Column(db.Integer, primary_key=True, nullable=False)
+
+    def __init__(self, num, _from, to, day):
+        self.num = num
+        self._from = _from
+        self.to = to
+        self.day = day
+
+
+class LogMng(db.Model):
+    __tablename__ = 'log_mng'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    subject = db.Column(db.String(100), primary_key=True, nullable=False)
+    desc = db.Column(db.String(100))
+
+    def __init__(self, subject, desc):
+        self.subject = subject
+        self.desc = desc
+
+
+class Event(db.Model):
+    __tablename__ = 'events'
+
+    event_id = db.Column(db.String(100), primary_key=True)
+    url = db.Column(db.String(256))
+    contact_id = db.Column(db.Integer, db.ForeignKey('contacts.contact_id'))
+    patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id'))
+    start_time = db.Column(db.TIMESTAMP)
+    status = db.Column(db.Integer)
+    row_created_time = db.Column(db.TIMESTAMP)
+
+    def __init__(self, event_id, url, start_time, status):
+        self.url = url
+        self.event_id = event_id
+        self.start_time = start_time
+        self.status = status
+
+
+
+
 @login_manager.user_loader
 def user_loader(id):
     return Users.query.filter_by(id=id).first()
