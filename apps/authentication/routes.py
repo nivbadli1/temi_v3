@@ -17,9 +17,11 @@ from apps.authentication.models import Users
 
 from apps.authentication.util import verify_pass
 
+
 @blueprint.route('/')
 def route_default():
     return redirect(url_for('authentication_blueprint.login'))
+
 
 # Login & Registration
 
@@ -37,7 +39,6 @@ def login():
 
         # Check the password
         if user and verify_pass(password, user.password):
-
             login_user(user)
             return redirect(url_for('authentication_blueprint.route_default'))
 
@@ -96,7 +97,8 @@ def register():
 @blueprint.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('authentication_blueprint.login')) 
+    return redirect(url_for('authentication_blueprint.login'))
+
 
 # Errors
 
