@@ -30,8 +30,6 @@ class ContactForm(FlaskForm):
     priority = IntegerField('l_name', validators=[DataRequired()])
 
 class ContactTimeForm(FlaskForm):
-    num = IntegerField('patient_id', validators=[DataRequired()])
+    day = IntegerField('patient_id', validators=[DataRequired()])
     _from = TimeField('from', validators=[DataRequired()])
     to = TimeField('to', validators=[DataRequired()])
-
-
