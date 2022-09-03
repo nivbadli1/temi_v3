@@ -10,11 +10,12 @@ from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 import json
-
+from apps.authentication.models import Patient,Users
 
 @blueprint.route('/index')
 @login_required
 def index():
+
     return render_template('home/index.html', segment='index')
 
 
@@ -41,9 +42,9 @@ def route_template(template):
 
         # Detect the current page
         segment = get_segment(request)
-        if segment == "calendar.html":
-            events_list = generate_events()
-            return render_template("home/" + template, segment=segment, events_list=events_list)
+        # if segment == "tables.html":
+        #     patients = patients.list()
+        #     return render_template("home/" + template, segment=segment, patients=patients)
 
         # Serve the file (if exists) from app/templates/home/FILE.html
         return render_template("home/" + template, segment=segment)
@@ -53,10 +54,11 @@ def route_template(template):
 
     except:
         return render_template('home/page-500.html'), 500
-
-
 # Helper - Extract current page name from request
+
+
 def get_segment(request):
+
     try:
 
         segment = request.path.split('/')[-1]
@@ -68,13 +70,3 @@ def get_segment(request):
 
     except:
         return None
-
-
-class Event:
-    def __init__(self, title, start, end, allDay):
-        self.title = title
-        self.start = start
-        self.end = end
-        self.backgroundColor = "#f56954"
-        self.borderColor = "#f56954"
-        self.allDay = allDay

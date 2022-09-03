@@ -1,0 +1,324 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Tables {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="min-height-300 bg-primary position-absolute w-100"></div>
+
+  {% include "includes/sidenav-rtl.html" %}
+
+<!--  <main class="main-content position-relative border-radius-lg ">-->
+  <main class="main-content position-relative border-radius-lg overflow-hidden">
+
+    % include "includes/navigation-rtl.html" %}
+
+{##}
+      {# This hidden_tag is a CSRF security feature. #}
+{#      {{ form.hidden_tag() }}#}
+{#      {{ form.patient_id.label(class="form-control-label") }} {{ form.patient_id(class="form-control form-control-lg") }}#}
+{#      {{ form.f_name.label(class="form-control-label") }} {{ form.f_name(class="form-control form-control-lg") }}#}
+{#      {{ form.l_name.label(class="form-control-label") }} {{ form.l_name(class="form-control form-control-lg") }}#}
+{#      {{ form.bed.label(class="form-control-label") }} {{ form.bed(class="form-control form-control-lg") }}#}
+{#      {{ form.department.label(class="form-control-label") }} {{ form.department(class="form-control form-control-lg") }}#}
+{#      {{ form.max_calls.label(class="form-control-label") }} {{ form.max_calls(class="form-control form-control-lg") }}#}
+{#      {{ form.submit(class="btn btn-outline-info" ) }}#}
+
+    <form class="form-group " dir="rtl" method="POST">
+    <div class="container-fluid py-4 " dir="rtl">
+
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header pb-0">
+              <div class="d-flex align-items-left">
+
+                <button class="btn btn-primary btn-sm ">ערוך פרטי מטופל</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="text-uppercase text-sm">פרטי המטופל</p>
+<div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">{{ form.f_name.label }}</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ form.f_name.data }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">{{ form.l_name.label }}</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ form.l_name.data}}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">{{ form.patient_id.label }}</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ form.patient_id.data }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">{{ form.bed.label }}</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ form.bed.data }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">{{ form.department.label }}</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ form.department.data }}</p>
+              </div>
+            </div>
+                <hr>
+                <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">{{ form.max_calls.label }}</p>
+              </div>
+
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ form.max_calls.data }}</p>
+              </div>
+            </div>
+                <hr>
+                </div>
+{#                <div class="col-md-6">#}
+{#                  <div class="form-group">#}
+{#                    {{ form.l_name.label(class="form-control-label") }}#}
+{#                   {{ form.l_name(class="form-control" ) }}#}
+{#                  </div>#}
+{#                </div>#}
+{#                <div class="col-md-6">#}
+{#                  <div class="form-group">#}
+{#                      {{ form.patient_id.label(class="form-control-label") }}#}
+{#                      {{ form.patient_id(class="form-control") }}#}
+{#                  </div>#}
+{#                </div>#}
+{#                <div class="col-md-3">#}
+{#                  <div class="form-group">#}
+{#                      {{ form.department.label(class="form-control-label") }}#}
+{#                      {{ form.department(class="form-control") }}#}
+{#                  </div>#}
+{#                </div>#}
+{#                  <div class="col-md-3">#}
+{#                  <div class="form-group">#}
+{#                      {{ form.max_calls.label(class="form-control-label") }}#}
+{#                      {{ form.max_calls(class="form-control") }}#}
+{#                  </div>#}
+{#                </div>#}
+              </div>
+              <hr class="horizontal dark">
+              <p class="text-uppercase text-sm">Contact Information</p>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="example-text-input" class="form-control-label">Address</label>
+                    <input class="form-control" type="text" value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="example-text-input" class="form-control-label">City</label>
+                    <input class="form-control" type="text" value="New York">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="example-text-input" class="form-control-label">Country</label>
+                    <input class="form-control" type="text" value="United States">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="example-text-input" class="form-control-label">Postal code</label>
+                    <input class="form-control" type="text" value="437300">
+                  </div>
+                </div>
+              </div>
+              <hr class="horizontal dark">
+              <p class="text-uppercase text-sm">About me</p>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="example-text-input" class="form-control-label">About me</label>
+                    <input class="form-control" type="text" value="A beautiful Dashboard for Bootstrap 5. It is Free and Open Source.">
+                  </div>
+                </div>
+              </div>
+            </div>
+          <div class="col-md-4">
+          <div class="card card-profile">
+              <div class="card-body pt-4 p-3">
+              <ul class="list-group">
+
+                <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
+                  <div class="d-flex flex-column">
+                    <h6 class="mb-3 text-sm"></h6>
+                    <span class="mb-2 text-xs">Company Name: <span class="text-dark font-weight-bold ms-sm-2">Viking Burrito</span></span>
+                    <span class="mb-2 text-xs">Email Address: <span class="text-dark ms-sm-2 font-weight-bold">oliver@burrito.com</span></span>
+                    <span class="text-xs">VAT Number: <span class="text-dark ms-sm-2 font-weight-bold">FRB1235476</span></span>
+                  </div>
+                  <div class="ms-auto text-end">
+                    <a class="btn btn-link text-danger text-gradient px-3 mb-0" href="javascript:;"><i class="far fa-trash-alt me-2"></i>Delete</a>
+                    <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit</a>
+                  </div>
+                </li>
+                <li class="list-group-item border-0 d-flex p-4 mb-2 mt-3 bg-gray-100 border-radius-lg">
+                  <div class="d-flex flex-column">
+                    <h6 class="mb-3 text-sm">Lucas Harper</h6>
+                    <span class="mb-2 text-xs">Company Name: <span class="text-dark font-weight-bold ms-sm-2">Stone Tech Zone</span></span>
+                    <span class="mb-2 text-xs">Email Address: <span class="text-dark ms-sm-2 font-weight-bold">lucas@stone-tech.com</span></span>
+                    <span class="text-xs">VAT Number: <span class="text-dark ms-sm-2 font-weight-bold">FRB1235476</span></span>
+                  </div>
+                  <div class="ms-auto text-end">
+                    <a class="btn btn-link text-danger text-gradient px-3 mb-0" href="javascript:;"><i class="far fa-trash-alt me-2"></i>Delete</a>
+                    <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit</a>
+                  </div>
+                </li>
+                <li class="list-group-item border-0 d-flex p-4 mb-2 mt-3 bg-gray-100 border-radius-lg">
+                  <div class="d-flex flex-column">
+                    <h6 class="mb-3 text-sm">Ethan James</h6>
+                    <span class="mb-2 text-xs">Company Name: <span class="text-dark font-weight-bold ms-sm-2">Fiber Notion</span></span>
+                    <span class="mb-2 text-xs">Email Address: <span class="text-dark ms-sm-2 font-weight-bold">ethan@fiber.com</span></span>
+                    <span class="text-xs">VAT Number: <span class="text-dark ms-sm-2 font-weight-bold">FRB1235476</span></span>
+                  </div>
+                  <div class="ms-auto text-end">
+                    <a class="btn btn-link text-danger text-gradient px-3 mb-0" href="javascript:;"><i class="far fa-trash-alt me-2"></i>Delete</a>
+                    <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="card-header text-center border-0 pt-0 pt-lg-2 pb-4 pb-lg-3">
+              <div class="d-flex justify-content-between">
+                <a href="javascript:;" class="btn btn-sm btn-info mb-0 d-none d-lg-block">Connect</a>
+                <a href="javascript:;" class="btn btn-sm btn-info mb-0 d-block d-lg-none"><i class="ni ni-collection"></i></a>
+                <a href="javascript:;" class="btn btn-sm btn-dark float-right mb-0 d-none d-lg-block">Message</a>
+                <a href="javascript:;" class="btn btn-sm btn-dark float-right mb-0 d-block d-lg-none"><i class="ni ni-email-83"></i></a>
+              </div>
+            </div>
+            <div class="card-body pt-0">
+              <div class="row">
+                <div class="col">
+                  <div class="d-flex justify-content-center">
+                    <div class="d-grid text-center">
+                      <span class="text-lg font-weight-bolder">22</span>
+                      <span class="text-sm opacity-8">Friends</span>
+                    </div>
+                    <div class="d-grid text-center mx-4">
+                      <span class="text-lg font-weight-bolder">10</span>
+                      <span class="text-sm opacity-8">Photos</span>
+                    </div>
+                    <div class="d-grid text-center">
+                      <span class="text-lg font-weight-bolder">89</span>
+                      <span class="text-sm opacity-8">Comments</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="text-center mt-4">
+                <h5>
+                  Mark Davis<span class="font-weight-light">, 35</span>
+                </h5>
+                <div class="h6 font-weight-300">
+                  <i class="ni location_pin mr-2"></i>Bucharest, Romania
+                </div>
+                <div class="h6 mt-4">
+                  <i class="ni business_briefcase-24 mr-2"></i>Solution Manager - Creative Tim Officer
+                </div>
+                <div>
+                  <i class="ni education_hat mr-2"></i>University of Computer Science
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+          </div>
+
+        </div>
+        <div class="col-md-4">
+          <div class="card card-profile">
+            <img src="{{ config.ASSETS_ROOT }}/img/bg-profile.jpg" alt="Image placeholder" class="card-img-top">
+            <div class="row justify-content-center">
+              <div class="col-4 col-lg-4 order-lg-2">
+                <div class="mt-n4 mt-lg-n6 mb-4 mb-lg-0">
+                  <a href="javascript:;">
+                    <img src="{{ config.ASSETS_ROOT }}/img/team-2.jpg" class="rounded-circle img-fluid border border-2 border-white">
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="card-header text-center border-0 pt-0 pt-lg-2 pb-4 pb-lg-3">
+              <div class="d-flex justify-content-between">
+                <a href="javascript:;" class="btn btn-sm btn-info mb-0 d-none d-lg-block">Connect</a>
+                <a href="javascript:;" class="btn btn-sm btn-info mb-0 d-block d-lg-none"><i class="ni ni-collection"></i></a>
+                <a href="javascript:;" class="btn btn-sm btn-dark float-right mb-0 d-none d-lg-block">Message</a>
+                <a href="javascript:;" class="btn btn-sm btn-dark float-right mb-0 d-block d-lg-none"><i class="ni ni-email-83"></i></a>
+              </div>
+            </div>
+            <div class="card-body pt-0">
+              <div class="row">
+                <div class="col">
+                  <div class="d-flex justify-content-center">
+                    <div class="d-grid text-center">
+                      <span class="text-lg font-weight-bolder">22</span>
+                      <span class="text-sm opacity-8">Friends</span>
+                    </div>
+                    <div class="d-grid text-center mx-4">
+                      <span class="text-lg font-weight-bolder">10</span>
+                      <span class="text-sm opacity-8">Photos</span>
+                    </div>
+                    <div class="d-grid text-center">
+                      <span class="text-lg font-weight-bolder">89</span>
+                      <span class="text-sm opacity-8">Comments</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="text-center mt-4">
+                <h5>
+                  Mark Davis<span class="font-weight-light">, 35</span>
+                </h5>
+                <div class="h6 font-weight-300">
+                  <i class="ni location_pin mr-2"></i>Bucharest, Romania
+                </div>
+                <div class="h6 mt-4">
+                  <i class="ni business_briefcase-24 mr-2"></i>Solution Manager - Creative Tim Officer
+                </div>
+                <div>
+                  <i class="ni education_hat mr-2"></i>University of Computer Science
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% include "includes/footer.html" %}
+
+    </div>
+</form>
+  </main>
+    <p>{{ contacts }}</p>
+{#{{ for contact in  contact}}#}
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}
+

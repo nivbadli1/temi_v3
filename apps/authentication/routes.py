@@ -13,13 +13,19 @@ from flask_login import (
 from apps import db, login_manager
 from apps.authentication import blueprint
 from apps.authentication.forms import LoginForm, CreateAccountForm
-from apps.authentication.models import Users
+from apps.authentication.models import Users,Patient
 
 from apps.authentication.util import verify_pass
+
 
 @blueprint.route('/')
 def route_default():
     return redirect(url_for('authentication_blueprint.login'))
+
+# @blueprint.route('/tables')
+# def tables():
+#     patients = Patient.query.all()
+#     return render_template('patients_blueprint.tables', patients=patients)
 
 # Login & Registration
 
@@ -37,7 +43,6 @@ def login():
 
         # Check the password
         if user and verify_pass(password, user.password):
-
             login_user(user)
             return redirect(url_for('authentication_blueprint.route_default'))
 
@@ -96,7 +101,8 @@ def register():
 @blueprint.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('authentication_blueprint.login')) 
+    return redirect(url_for('authentication_blueprint.login'))
+
 
 # Errors
 

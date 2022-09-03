@@ -18,15 +18,15 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link " href="/tables.html">
+          <a class="nav-link "href="{{ url_for('patients_blueprint.tables') }}">
             <div class="icon icon-shape icon-sm border-radius-md text-center ms-2 d-flex align-items-center justify-content-center">
               <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
             </div>
-            <span class="nav-link-text me-1">אירועים</span>
+            <span class="nav-link-text me-1">מטופלים</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link " href="/billing.html">
+          <a class="nav-link " href="/profile.html">
             <div class="icon icon-shape icon-sm border-radius-md text-center ms-2 d-flex align-items-center justify-content-center">
               <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
             </div>
@@ -34,7 +34,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link " href="/calendar.html">
+          <a class="nav-link " href="/virtual-reality.html">
             <div class="icon icon-shape icon-sm border-radius-md text-center ms-2 d-flex align-items-center justify-content-center">
               <i class="ni ni-app text-info text-sm opacity-10"></i>
             </div>
@@ -53,11 +53,11 @@
           <h6 class="ps-4 me-4 pe-2 text-uppercase text-xs font-weight-bolder opacity-6">הגדרות משתמש</h6>
         </li>
         <li class="nav-item">
-          <a class="nav-link " href="/profile.html">
+          <a class="nav-link "  href="{{ url_for('patients_blueprint.tables') }}">
             <div class="icon icon-shape icon-sm border-radius-md text-center ms-2 d-flex align-items-center justify-content-center">
               <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
             </div>
-            <span class="nav-link-text me-1">פרופיל משתמש</span>
+            <span class="nav-link-text me-1">פרופיל</span>
           </a>
         </li>
         <li class="nav-item">
@@ -77,5 +77,18 @@
           </a>
         </li>
       </ul>
+    </div>
+    <div class="sidenav-footer mx-3 ">
+      <div class="card card-plain shadow-none" id="sidenavCard">
+        <img class="w-50 mx-auto" src="{{ config.ASSETS_ROOT }}/img/illustrations/icon-documentation.svg" alt="sidebar_illustration">
+        <div class="card-body text-center p-3 w-100 pt-0">
+          <div class="docs-info">
+            <h6 class="mb-0 text-center">تحتاج مساعدة?</h6>
+            <p class="text-xs font-weight-bold text-center mb-0">يرجى التحقق من مستنداتنا</p>
+          </div>
+        </div>
+      </div>
+      <a href="https://www.creative-tim.com/learning-lab/bootstrap/license/argon-dashboard" target="_blank" class="btn btn-dark btn-sm w-100 mb-3">توثيق</a>
+      <a class="btn btn-primary btn-sm mb-0 w-100" href="https://appseed.us/product/argon-dashboard/flask/" type="button">التطور للاحترافية</a>
     </div>
   </aside>

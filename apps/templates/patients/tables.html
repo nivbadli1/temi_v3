@@ -1,0 +1,101 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Tables {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="min-height-300 bg-primary position-absolute w-100"></div>
+      
+  {% include "includes/sidenav-rtl.html" %}
+
+<!--  <main class="main-content position-relative border-radius-lg ">-->
+  <main class="main-content position-relative border-radius-lg overflow-hidden">
+
+    % include "includes/navigation-rtl.html" %}
+
+
+     <div class="container-fluid py-4" dir="rtl">
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card mb-4">
+            <div class="card-header pb-0">
+
+                <a href="{{ url_for('patients_blueprint.add') }}", class="btn btn-primary bg-success">הוספת מטופל חדש</a>
+            </div>
+
+            <div class="card-body px-0 pt-0 pb-2">
+              <div class="table-responsive p-0">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-m font-weight-bolder opacity-7">תעודת זהות</th>
+                      <th class="text-uppercase text-secondary text-m font-weight-bolder opacity-7 ps-2">שם </th>
+                      <th class="text-center text-uppercase text-secondary text-m font-weight-bolder opacity-7">מספר מיטה</th>
+                      <th class="text-center text-uppercase text-secondary text-m font-weight-bolder opacity-7">מספר שיחות שבועיות</th>
+                      <th class="text-secondary opacity-7"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for patient in patients %}
+                    <tr>
+                      <td>
+                        <div class="d-flex px-2 py-1">
+
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-sm">{{ patient.patient_id }}</h6>
+
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                          <p class="text-m font-weight-bold mb-0">{{ patient.f_name }} {{ patient.l_name }}</p>
+
+                      </td>
+
+                     <td class="align-middle text-center">
+                        <span class="text-secondary text-m font-weight-bold">{{ patient.bed }}</span>
+                     </td>
+                      <td class="align-middle text-center text-sm">
+                        <span class="badge badge-sm bg-gradient-success">Online</span>
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="text-secondary text-m font-weight-bold">{{ patient.max_calls }}</span>
+                      </td>
+          <td>
+            <a class="btn btn-indigo btn-sm m-0" href="{{url_for('patients_blueprint.update',patient_id=patient.patient_id)}}" role="button">בחירה</a>
+          </td>
+          <td>
+            <a class="btn btn-indigo btn-sm m-0" href="{{url_for('patients_blueprint.update',patient_id=patient.patient_id)}}" role="button">עריכה</a>
+          </td>
+
+                <td class="align-middle text-center text-m">
+          <form action="{{ url_for('patients_blueprint.delete',patient_id = patient.patient_id) }}" method="POST">
+            <input class="btn btn-danger" type="submit" value="מחיקה">
+          </form>
+                    </tr>
+                      </td>
+                    {% endfor %}
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+
+
+  </main>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}

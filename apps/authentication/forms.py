@@ -11,21 +11,21 @@ from wtforms.validators import Email, DataRequired
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Username',
+    username = StringField('מספר המחלקה',
                          id='username_login',
                          validators=[DataRequired()])
-    password = PasswordField('Password',
+    password = PasswordField('סיסמה',
                              id='pwd_login',
                              validators=[DataRequired()])
 
 
 class CreateAccountForm(FlaskForm):
-    username = StringField('Username',
+    username = StringField('מספר המחלקה',
                          id='username_create',
                          validators=[DataRequired()])
-    email = StringField('Email',
+    email = StringField('כתובת דואר אלקטרוני',
                       id='email_create',
                       validators=[DataRequired(), Email()])
-    password = PasswordField('Password',
+    password = PasswordField('סיסמת התחברות',
                              id='pwd_create',
                              validators=[DataRequired()])
