@@ -19,19 +19,6 @@ def index():
     return render_template('home/index.html', segment='index')
 
 
-def generate_events():
-    event_list = []
-    newEvent = Event("2022-09-09T09:00:00", "2022-09-09T10:00:00", "Is it working", allDay=False)
-    event_list.append(newEvent)
-
-    newEvent2 = Event("2022-09-10T09:00:00", "2022-09-10T10:00:00", "Is it working 2", allDay=False)
-    event_list.append(newEvent2)
-
-    for event in event_list:
-        print("event is: ", event.title, event.start, event.end)
-    return event_list
-
-
 @blueprint.route('/<template>', methods=['GET', 'POST'])
 @login_required
 def route_template(template):
