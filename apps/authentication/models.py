@@ -9,8 +9,8 @@ from apps import db, login_manager
 
 from apps.authentication.util import hash_pass
 
-class Users(db.Model, UserMixin):
 
+class Users(db.Model, UserMixin):
     __tablename__ = 'Users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -43,9 +43,9 @@ class Patient(db.Model):
     f_name = db.Column(db.String(50))
     l_name = db.Column(db.String(50))
     bed = db.Column(db.Integer)
-    department = db.Column(db.Integer)
+    department = db.Column(db.Integer, db.ForeignKey('Users.id'), nullable=False)
     max_calls = db.Column(db.Integer)
-    contacts = db.relationship('Contact', backref='patient', lazy='dynamic')
+    contacts = db.relationship('Contact', backref='patient', lazy='select')
     events = db.relationship('Event', backref='patient', lazy='dynamic')
 
     def __init__(self, patient_id, f_name, l_name, bed, department, max_calls):
@@ -77,7 +77,7 @@ class Contact(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id', ondelete='CASCADE', onupdate='CASCADE'),
                            index=True)
     events = db.relationship('Event', backref='contact', lazy='dynamic')
-    contacts_times = db.relationship('ContactsTime', backref='contact', lazy='dynamic')
+    contacts_times = db.relationship('ContactsTime', backref='contact', lazy='select')
 
     def __init__(self, patient_id, f_name, l_name, phone, mail, priority):
         self.patient_id = patient_id
@@ -88,16 +88,16 @@ class Contact(db.Model):
         self.priority = priority
 
     def __repr__(self):
-        return 'Contact(%r, %r, %r, %r, %r)' % (self.f_name, self.l_name, self.phone, self.mail, self.patient_id)
+        return 'Contact(%r,%r, %r, %r, %r, %r, %r)' % (self.contact_id,self.f_name, self.l_name, self.phone, self.mail,self.priority,self.patient_id)
 
 
 class ContactsTime(db.Model):
     __tablename__ = 'contacts_times'
 
     contact_id = db.Column(db.Integer, db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'))
-    day = db.Column(db.Integer, primary_key=True, nullable=False)
-    _from = db.Column('from', db.Time, primary_key=True, nullable=False)
-    to = db.Column(db.Time, primary_key=True, nullable=False)
+    day = db.Column(db.Integer, db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'))
+    _from = db.Column('from', db.Time, db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'))
+    to = db.Column(db.Time, db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'))
 
     def __init__(self, contact_id, day, _from, to):
         self.contact_id = contact_id
@@ -110,10 +110,10 @@ class ContactsTime(db.Model):
             self.contact_id, self.day, self._from, self.to)
 
 
-class Department(db.Model):
-    __tablename__ = 'departments'
+class DepartmentsTimes(db.Model):
+    __tablename__ = 'departments_times'
 
-    num = db.Column(db.Integer, primary_key=True, nullable=False)
+    deprtment_id = db.Column(db.Integer, db.ForeignKey('Users.id'), nullable=False)
     _from = db.Column('from', db.Time, primary_key=True, nullable=False)
     to = db.Column(db.Time, primary_key=True, nullable=False)
     day = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -153,8 +153,6 @@ class Event(db.Model):
         self.event_id = event_id
         self.start_time = start_time
         self.status = status
-
-
 
 
 @login_manager.user_loader
