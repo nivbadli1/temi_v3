@@ -94,10 +94,12 @@ class Contact(db.Model):
 class ContactsTime(db.Model):
     __tablename__ = 'contacts_times'
 
-    contact_id = db.Column(db.Integer, db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'))
-    day = db.Column(db.Integer, db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'))
-    _from = db.Column('from', db.Time, db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'))
-    to = db.Column(db.Time, db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'))
+    id = db.Column(db.Integer, primary_key=True)
+    day = db.Column(db.Integer)
+    contact_id = db.Column(db.Integer,db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'),
+                           index=True)
+    _from = db.Column('from', db.Time)
+    to = db.Column(db.Time)
 
     def __init__(self, contact_id, day, _from, to):
         self.contact_id = contact_id
@@ -108,7 +110,7 @@ class ContactsTime(db.Model):
     def __repr__(self):
         return "ContactsTime(contact_id='%s', day='%s', _from='%s', to='%s')" % (
             self.contact_id, self.day, self._from, self.to)
-
+#
 
 class DepartmentsTimes(db.Model):
     __tablename__ = 'departments_times'
