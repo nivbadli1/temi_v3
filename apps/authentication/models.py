@@ -4,6 +4,7 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask_login import UserMixin
+from datetime import datetime
 
 from apps import db, login_manager
 
@@ -148,7 +149,8 @@ class Event(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id'))
     start_time = db.Column(db.TIMESTAMP)
     status = db.Column(db.Integer)
-    row_created_time = db.Column(db.TIMESTAMP)
+    row_created_time = db.Column(db.TIMESTAMP, default=datetime.now())
+
 
     def __init__(self, event_id, url, start_time, status):
         self.url = url
