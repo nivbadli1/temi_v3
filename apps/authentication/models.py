@@ -69,6 +69,7 @@ class Patient(db.Model):
 class Contact(db.Model):
     __tablename__ = 'contacts'
 
+
     contact_id = db.Column(db.Integer, primary_key=True)
     f_name = db.Column(db.String(50))
     l_name = db.Column(db.String(50))
@@ -88,9 +89,9 @@ class Contact(db.Model):
         self.mail = mail
         self.priority = priority
 
+
     def __repr__(self):
-        return 'Contact(%r,%r, %r, %r, %r, %r, %r)' % (
-        self.contact_id, self.f_name, self.l_name, self.phone, self.mail, self.priority, self.patient_id)
+        return 'Contact(%r,%r, %r, %r, %r, %r, %r)' % (self.contact_id,self.f_name, self.l_name, self.phone, self.mail,self.priority,self.patient_id)
 
 
 class ContactsTime(db.Model):
@@ -102,7 +103,7 @@ class ContactsTime(db.Model):
                            index=True)
     _from = db.Column('from', db.Time)
     to = db.Column(db.Time)
-
+    contcts = db.relationship(Contact)
     def __init__(self, contact_id, day, _from, to):
         self.contact_id = contact_id
         self.day = day
