@@ -4,9 +4,9 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, TimeField
+from wtforms import StringField, PasswordField, IntegerField, TimeField, DateField
 from wtforms.validators import Email, DataRequired
-
+import utils
 from apps.authentication import forms
 
 
@@ -22,14 +22,14 @@ class PatientForm(FlaskForm):
 
 
 class ContactForm(FlaskForm):
-    contact_id = IntegerField('patient_id', validators=[DataRequired()])
-    f_name = StringField('f_name', validators=[DataRequired()])
-    l_name = StringField('l_name', validators=[DataRequired()])
-    phone = StringField('l_name', validators=[DataRequired()])
-    mail = StringField('l_name', validators=[DataRequired()])
-    priority = IntegerField('l_name', validators=[DataRequired()])
+    f_name = StringField('שם פרטי', validators=[DataRequired()])
+    l_name = StringField('שם משפחה', validators=[DataRequired()])
+    phone = StringField('מספר טלפון', validators=[DataRequired()])
+    mail = StringField('כתובת מייל', validators=[DataRequired()])
+    priority = IntegerField('עדיפות', validators=[DataRequired()])
+    day = DateField(id='datepick')
 
 class ContactTimeForm(FlaskForm):
     day = IntegerField('patient_id', validators=[DataRequired()])
-    _from = TimeField('from', validators=[DataRequired()])
+    _from = TimeField('from', validators=[DataRequired()],choices=[utils.get_times_list()])
     to = TimeField('to', validators=[DataRequired()])
