@@ -120,10 +120,47 @@
         </div>
         <!-- /.row -->
       </div><!-- /.container-fluid -->
+        <div class="card-header pb-0 px-3" dir="rtl">
+           <button type="button" class="btn btn-success float-right" id="editEventButton"
+                   data-toggle="modal" data-target="#add_new_contact_modal" style="display:none">הוספת איש קשר חדש
+           </button>
+       </div>
+
     </section>
     <!-- /.content -->
-  </div>
-<!--   /.content-wrapper -->
+
+                                <div id="add_new_contact_modal" class="modal fade" role="dialog" dir="rtl">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+
+                                            <h4 class="modal-title">הוספת מטופל חדש</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="POST"
+                                                  action="">
+                                                <div class="form-group">
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <button class="btn btn-primary" type="submit">הוספת איש קשר חדש
+                                                    </button>
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                            </button>
+                                            <button type="button" class="btn cancel" onclick="closeForm()">Close 2</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+  </div><!--   /.content-wrapper -->
   </main>
 
 {% endblock content %}
@@ -151,6 +188,9 @@
   <script src="/static/assets/plugins/fullcalendar-bootstrap/main.min.js"></script>
   <!-- Page specific script -->
   <script>
+  document.addEventListener("DOMContentLoaded", function(event){
+  // your code here
+
     $(function () {
 
       /* initialize the external events
@@ -228,7 +268,6 @@
                     id: '{{event.event_id}}',
                     title: '{{event.summary}}',
                     start: '{{event.start}}',
-                    url: 'www.facebook.com',
                     end: '{{event.end}}'
                 },
             {% endfor %}
@@ -243,8 +282,11 @@
           }
         },
          eventClick: function(info) {
+<!--           var modal = document.getElementById("add_new_contact_modal");-->
+<!--           alert('Event: ' + info.event.title);-->
            info.jsEvent.preventDefault(); // don't let the browser navigate
-<!--Edit event in new popup, need to build pup up form using the event link?-->
+           document.getElementById("editEventButton").click();
+<!--           modal.style.display = "block";-->
          }
 
       });
@@ -290,6 +332,7 @@
         $('#new-event').val('')
       })
     })
+});
   </script>
 
 {% endblock javascripts %}

@@ -6,7 +6,7 @@ Copyright (c) 2019 - present AppSeed.us
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, TimeField, DateField
 from wtforms.validators import Email, DataRequired
-import utils
+from apps.patients import utils
 from apps.authentication import forms
 
 
