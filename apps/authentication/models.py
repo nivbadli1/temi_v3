@@ -89,7 +89,8 @@ class Contact(db.Model):
         self.priority = priority
 
     def __repr__(self):
-        return 'Contact(%r,%r, %r, %r, %r, %r, %r)' % (self.contact_id,self.f_name, self.l_name, self.phone, self.mail,self.priority,self.patient_id)
+        return 'Contact(%r,%r, %r, %r, %r, %r, %r)' % (
+        self.contact_id, self.f_name, self.l_name, self.phone, self.mail, self.priority, self.patient_id)
 
 
 class ContactsTime(db.Model):
@@ -97,7 +98,7 @@ class ContactsTime(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     day = db.Column(db.Integer)
-    contact_id = db.Column(db.Integer,db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'),
+    contact_id = db.Column(db.Integer, db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'),
                            index=True)
     _from = db.Column('from', db.Time)
     to = db.Column(db.Time)
@@ -111,6 +112,8 @@ class ContactsTime(db.Model):
     def __repr__(self):
         return "ContactsTime(contact_id='%s', day='%s', _from='%s', to='%s')" % (
             self.contact_id, self.day, self._from, self.to)
+
+
 #
 
 class DepartmentsTimes(db.Model):
@@ -151,12 +154,13 @@ class Event(db.Model):
     status = db.Column(db.Integer)
     row_created_time = db.Column(db.TIMESTAMP, default=datetime.now())
 
-
-    def __init__(self, event_id, url, start_time, status):
+    def __init__(self, event_id, url, start_time, status, patient_id, contact_id):
         self.url = url
         self.event_id = event_id
         self.start_time = start_time
         self.status = status
+        self.patient_id = patient_id
+        self.contact_id = contact_id
 
 
 @login_manager.user_loader

@@ -28,7 +28,7 @@
   {% include "includes/sidenav-rtl.html" %}
     <main class="main-content position-relative border-radius-lg overflow-hidden">
 
-    {% include "includes/navigation-rtl.html" %}
+    % include "includes/navigation-rtl.html" %}
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -217,19 +217,14 @@
           center: 'title',
           right : 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-
-
-
         'themeSystem': 'bootstrap',
         //Random default events
         events: [
-            {% for event in gc %}
+            {% for event in events_list %}
                 {
-                    id: '{{event.event_id}}',
-                    title: '{{event.summary}}',
+                    title: '{{event.title}}',
                     start: '{{event.start}}',
-                    url: 'www.facebook.com',
-                    end: '{{event.end}}'
+                    end: '{{event.end}}',
                 },
             {% endfor %}
         ],
@@ -241,12 +236,7 @@
             // if so, remove the element from the "Draggable Events" list
             info.draggedEl.parentNode.removeChild(info.draggedEl);
           }
-        },
-         eventClick: function(info) {
-           info.jsEvent.preventDefault(); // don't let the browser navigate
-<!--Edit event in new popup, need to build pup up form using the event link?-->
-         }
-
+        }
       });
 
       calendar.render();

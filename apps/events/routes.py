@@ -3,23 +3,78 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from flask import render_template, redirect, request, url_for, session, flash
+from flask import render_template, redirect, request, url_for, session, flash, jsonify
 from flask_login import login_required
 
 # from apps.patients import blueprint
+from gcsa.google_calendar import GoogleCalendar
+
 from apps.events import blueprint
 from apps.authentication.models import Users, Patient, Contact, ContactsTime
 from apps import db
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
+from collections import defaultdict
+
+e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
+engine = create_engine(e)
+session = Session(engine)
 
 
 @blueprint.route('/calendar', methods=['GET', 'POST'])
 @login_required
 def calendar():
-    events_list = generate_events()
+    # events_list = generate_events()
+    # events_list = getAllEventsToCalendar()
     # return render_template('events/calendar.html', segment=segment, events_list=events_list)
-    return render_template('events/calendar.html', events_list=events_list)
+    gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
+
+    return render_template('events/calendar.html', gc=gc)
 
 
+@blueprint.route('/calendar_page')
+@login_required
+def calender_page():
+    return render_template('events/calendar_events.html')
+
+@blueprint.route('/calendar-events')
+@login_required
+def calendar_events():
+    conn = None
+    cursor = None
+    try:
+        # conn = mysql.connect() cursor = conn.cursor(pymysql.cursors.DictCursor) cursor.execute( "SELECT id, title,
+        # url, class, UNIX_TIMESTAMP(start_date)*1000 as start, UNIX_TIMESTAMP(end_date)*1000 as " "end FROM event")
+        # rows = cursor.fetchall()
+        from apps.events.functs import getAllEventsToCalendar_list
+        resp = jsonify(getAllEventsToCalendar_list())
+        resp.status_code = 200
+        return resp
+    except Exception as e:
+        print(e)
+
+        # return render_template('events/calendar_events.html', events_list=events_list)
+
+
+def getAllEventsToCalendar():
+    resultList = []
+    resultDict = {}
+    # Iterate and get all events to a temp list:
+    for event in session.query(Event).all():
+        resultList.append(event.__dict__)
+        # For QA:
+        # print("ResultList: ", resultList)
+        # print("Current Results: ", event.__dict__)
+    # Define Default Dict:
+    resultDict = defaultdict(dict)
+    # For each event, remove useless column and add to resultDict with event_ID as main tag:
+    # Also remove useless columns for calander
+    for event in resultList:
+        event.pop("_sa_instance_state", "status", "row_created_time")
+        resultDict[event["event_id"]].update(event)
+
+    return resultDict
 
 
 # def get_segment(request):
@@ -38,7 +93,8 @@ def generate_events():
     newEvent = Event("2022-09-09T09:00:00", "2022-09-09T10:00:00", "Is it working", allDay=False, resourceEditable=True)
     event_list.append(newEvent)
 
-    newEvent2 = Event("2022-09-10T09:00:00", "2022-09-10T10:00:00", "Is it working 2", allDay=False, resourceEditable=True)
+    newEvent2 = Event("2022-09-10T09:00:00", "2022-09-10T10:00:00", "Is it working 2", allDay=False,
+                      resourceEditable=True)
     event_list.append(newEvent2)
 
     for event in event_list:
@@ -55,6 +111,11 @@ class Event:
         self.borderColor = "#f56954"
         self.allDay = allDay
         self.resourceEditable = resourceEditable
+
+    def __repr__(self):
+        return "{title:'%s', start='%s', end='%s', allDay='%s', backgroundColor='%s', borderColor='%s', resourceEditable: '%s'}" % (
+            self.title, self.start, self.end, self.allDay, self.backgroundColor, self.borderColor,
+            self.resourceEditable)
 
 # @blueprint.route("/<int:patient_id>/patient_info", methods=['GET', 'POST'])
 # @login_required
