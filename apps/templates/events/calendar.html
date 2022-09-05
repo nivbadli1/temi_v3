@@ -134,7 +134,7 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
 
-                                            <h4 class="modal-title">הוספת מטופל חדש</h4>
+                                            <h4 class="modal-title">אירוע</h4>
                                         </div>
                                         <div class="modal-body">
                                             <form method="POST"
@@ -285,6 +285,7 @@
 <!--           var modal = document.getElementById("add_new_contact_modal");-->
 <!--           alert('Event: ' + info.event.title);-->
            info.jsEvent.preventDefault(); // don't let the browser navigate
+           console.log(info.event.id)
            document.getElementById("editEventButton").click();
 <!--           modal.style.display = "block";-->
          }
