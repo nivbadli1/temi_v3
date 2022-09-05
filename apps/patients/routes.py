@@ -9,9 +9,8 @@ from flask_login import (
     login_user,
     logout_user, login_required
 )
-
 from apps.patients import blueprint
-from apps.patients.forms import PatientForm, ContactForm
+from apps.patients.forms import PatientForm, ContactForm, ContactTimeForm
 from apps.authentication.models import Users, Patient, Contact
 from apps import db
 from apps.authentication.util import verify_pass
@@ -26,7 +25,7 @@ def tables():
     return render_template('patients/tables.html', patients=patients)
 
 
-@blueprint.route("/<int:patient_id>/patient_info", methods=['GET', 'POST'])
+@blueprint.route("/<int:patient_id>/patient", methods=['GET', 'POST'])
 @login_required
 def update(patient_id):
     form = PatientForm()
@@ -89,19 +88,20 @@ def add():
 def patient_info(patient_id):
     patient_form = PatientForm()
     contact_form = ContactForm()
+    contact_time_form = ContactTimeForm()
     # Get all attributes of the patient
-    p = Patient.query.filter_by(patient_id=patient_id).first_or_404()
-    contacts = contacts = p.contacts
+    patient = Patient.query.filter_by(patient_id=patient_id).first_or_404()
+    # contacts = p.contacts
     if request.method == 'GET':
-        patient_form.patient_id.data = p.patient_id
-        patient_form.f_name.data = p.f_name
-        patient_form.l_name.data = p.l_name
-        patient_form.bed.data = p.bed
-        patient_form.department.data = p.department
-        patient_form.max_calls.data = p.max_calls
+        patient_form.patient_id.data = patient.patient_id
+        patient_form.f_name.data = patient.f_name
+        patient_form.l_name.data = patient.l_name
+        patient_form.bed.data = patient.bed
+        patient_form.department.data = patient.department
+        patient_form.max_calls.data = patient.max_calls
         # contacts = p.contacts
     return render_template('patients/patient_info.html', patient_form=patient_form, patient_id=patient_id,
-                           contacts=contacts, contact_form=contact_form)
+                           patient=patient, contact_form=contact_form,contact_time_form=contact_time_form)
 
 
 # Contacts functions

@@ -4,21 +4,24 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, TimeField, DateField
+from wtforms import StringField, PasswordField, IntegerField, TimeField, DateField, SelectField
 from wtforms.validators import Email, DataRequired
-import utils
+from apps.patients import utils
+
 from apps.authentication import forms
+from apps.patients.utils import get_days_list, get_times_list
 
 
 # login and registration
 
 class PatientForm(FlaskForm):
-    patient_id = StringField('תעודת זהות',validators=[DataRequired()])
-    f_name = StringField('שם פרטי',validators=[DataRequired()])
-    l_name = StringField('שם משפחה',validators=[DataRequired()])
-    bed = IntegerField('מספר מיטה',validators=[DataRequired()])
-    department = IntegerField('מספר מחלקה',validators=[DataRequired()])
-    max_calls = IntegerField('מספר שיחות שבועיות',validators=[DataRequired()])
+    patient_id = StringField('תעודת זהות', validators=[DataRequired()])
+    f_name = StringField('שם פרטי', validators=[DataRequired()])
+    l_name = StringField('שם משפחה', validators=[DataRequired()])
+    bed = IntegerField('מספר מיטה', validators=[DataRequired()])
+    department = IntegerField('מספר מחלקה', validators=[DataRequired()])
+    max_calls = IntegerField('מספר שיחות שבועיות', validators=[DataRequired()])
+    select_list = SelectField('idates', validators=[DataRequired()])
 
 
 class ContactForm(FlaskForm):
@@ -29,7 +32,8 @@ class ContactForm(FlaskForm):
     priority = IntegerField('עדיפות', validators=[DataRequired()])
     day = DateField(id='datepick')
 
+
 class ContactTimeForm(FlaskForm):
-    day = IntegerField('patient_id', validators=[DataRequired()])
-    _from = TimeField('from', validators=[DataRequired()],choices=[utils.get_times_list()])
-    to = TimeField('to', validators=[DataRequired()])
+    day = SelectField('יום',choices=get_days_list(), validators=[DataRequired()])
+    from_hour = SelectField('משעה',choices=get_times_list(), validators=[DataRequired()])
+    to_hour = SelectField('עד שעה',choices=get_times_list(), validators=[DataRequired()])

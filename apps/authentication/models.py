@@ -80,13 +80,13 @@ class Contact(db.Model):
     events = db.relationship('Event', backref='contact', lazy='dynamic')
     contacts_times = db.relationship('ContactsTime', backref='contact', lazy='select')
 
-    def __init__(self, patient_id, f_name, l_name, phone, mail, priority):
-        self.patient_id = patient_id
-        self.f_name = f_name
-        self.l_name = l_name
-        self.phone = phone
-        self.mail = mail
-        self.priority = priority
+    # def __init__(self, patient_id, f_name, l_name, phone, mail, priority):
+    #     self.patient_id = patient_id
+    #     self.f_name = f_name
+    #     self.l_name = l_name
+    #     self.phone = phone
+    #     self.mail = mail
+    #     self.priority = priority
 
 
     def __repr__(self):
@@ -101,7 +101,7 @@ class ContactsTime(db.Model):
                            index=True)
     _from = db.Column('from', db.Time)
     to = db.Column(db.Time)
-    contcts = db.relationship(Contact)
+    contacts = db.relationship(Contact,backref='contact')
     def __init__(self, contact_id, day, _from, to):
         self.contact_id = contact_id
         self.day = day
@@ -109,9 +109,7 @@ class ContactsTime(db.Model):
         self.to = to
 
     def __repr__(self):
-        return "ContactsTime(contact_id='%s', day='%s', _from='%s', to='%s')" % (
-            self.contact_id, self.day, self._from, self.to)
-#
+        return '<Time: %s, %s, %s, %s, %s>' % (self.day, self.contact_id, self._from, self.to, self.contact_id)
 
 class DepartmentsTimes(db.Model):
     __tablename__ = 'departments_times'
