@@ -79,7 +79,7 @@ class Contact(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id', ondelete='CASCADE', onupdate='CASCADE'),
                            index=True)
     events = db.relationship('Event', backref='contact', lazy='dynamic')
-    contacts_times = db.relationship('ContactsTime', backref='contact', lazy='select')
+    contacts_times = db.relationship('ContactTime', backref='contact', lazy='select')
 
     def __init__(self, patient_id, f_name, l_name, phone, mail, priority):
         self.patient_id = patient_id
@@ -93,7 +93,7 @@ class Contact(db.Model):
     def __repr__(self):
         return '<Contact: %s, %s, %s, %s, %s>' % (self.f_name, self.l_name, self.phone, self.mail, self.priority)
 
-class ContactsTime(db.Model):
+class ContactTime(db.Model):
     __tablename__ = 'contacts_times'
 
     id = db.Column(db.Integer, primary_key=True)
