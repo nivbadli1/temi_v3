@@ -11,7 +11,7 @@ from gcsa.google_calendar import GoogleCalendar
 from gcsa.event import Event as GoogleEvent
 
 from apps.events import blueprint
-from apps.authentication.models import Users, Patient, Contact, ContactsTime
+from apps.authentication.models import Users, Patient, Contact, ContactTime
 from apps import db
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

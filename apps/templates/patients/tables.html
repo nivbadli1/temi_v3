@@ -24,7 +24,7 @@
           <div class="card mb-4">
             <div class="card-header pb-0">
 
-                <a href="{{ url_for('patients_blueprint.add') }}", class="btn btn-primary bg-success">הוספת מטופל חדש</a>
+                <a href="{{ url_for('patients_blueprint.add_patient') }}", class="btn btn-primary bg-success">הוספת מטופל חדש</a>
             </div>
 
             <div class="card-body px-0 pt-0 pb-2">
@@ -97,7 +97,7 @@
                                         </button>
 
                                         <form method="POST"
-                                              action="{{ url_for('patients_blueprint.delete',patient_id = patient.patient_id) }}">
+                                              action="{{ url_for('patients_blueprint.delete_patient',patient_id = patient.patient_id) }}">
                                             <input class="btn btn-danger" type="submit" value="מחיקה">
                                         </form>
                                     </div>
