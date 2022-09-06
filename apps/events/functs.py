@@ -20,6 +20,7 @@ from collections import defaultdict
 from gcsa.google_calendar import GoogleCalendar
 from gcsa.event import Event as GoogleEvent
 # from datetime import datetime, timezone
+from sqlalchemy import select
 
 
 import os.path
@@ -234,7 +235,7 @@ def generate_json():
     return event
 
 
-def generate_json_test():
+def generated_json_test():
     fake_event = {
         "kind": "calendar#event",
         "etag": '"3324818981037000"',
@@ -286,7 +287,8 @@ def generate_json_test():
     return fake_event
 
 
-def add_new_google_calendar_event(start_time):
+# Working perfect
+def add_new_google_calendar_event(start_time, patient_name, contact_name):
     gc = GoogleCalendar(credentials_path='./credentials.json')
     event_template = generate_json()
     # Format the Template JSON
@@ -295,6 +297,8 @@ def add_new_google_calendar_event(start_time):
     new_end_time = start_time + datetime.timedelta(minutes=20)
     new_end_time = new_end_time.isoformat() + "+03:00"
     event_template['end']['dateTime'] = new_end_time
+
+    event_template['summary'] = "פגישה בין " + patient_name + " " + contact_name
 
     print("event template new details are:", event_template)
 
@@ -309,6 +313,7 @@ def add_new_google_calendar_event(start_time):
 
 
 def add_event_to_db(event, patient_id, contact_id):
+    print("Adding event...")
     db_event = Event(url=event['hangoutLink'], event_id=event['id'], start_time=event['start']['dateTime'].split()[0],
                      status=0, patient_id=patient_id, contact_id=contact_id)
     db.session.add(db_event)
@@ -319,38 +324,57 @@ def add_event_to_db(event, patient_id, contact_id):
 
 def create_new_event(start, patient_id, contact_id):
     # Create a Google calendar event
-    event = add_new_google_calendar_event(start)
+    # should also take the p name and c name to do a beautiful title
+    patient_name = select(Patient.patient_name).where(Patient.patient_id == patient_id)
+    contact_name = select(Contact.f_name).where(Contact.contact_id == contact_id)
+    event = add_new_google_calendar_event(start, patient_name, contact_name)
 
     # Add new event ID to our database event table
-
     add_event_to_db(event, patient_id, contact_id)
+
     # Add new event job in crony
 
     print("Im done!!! ")
+
+def delete_event(event_id):
+    # Get event from Google Calendar and delete it:
+    delete_calendar_event(event_id)
+
+    # Set Event in db to status = 2
+    event = Event.query.filter_by(event_id=event_id).first_or_404()
+    event = event.status = 2
+
+    # Delete task from chrony
+
+    print("Event deleted from system successfully")
+
+def delete_calendar_event(event_id):
+    gc = GoogleCalendar(credentials_path='./credentials.json')
+    event_to_be_deleted = gc.get_event(event_id)
+    gc.delete_event(event_to_be_deleted)
+    print("Event deleted successfully")
 
 
 def tests():
     print("   tests   ")
     # gc = GoogleCalendar(credentials_path='./credentials.json')
-    fake_template = generate_json_test()
-    print(fake_template['hangoutLink'])
-    print(fake_template['id'])
-    print(type(fake_template['start']['dateTime']))
-    print(fake_template['start']['dateTime'].split()[0])
 
+    # temp_json = generate_json_test()
+    # add_event_to_db(temp_json, 7, 29)
 
 if __name__ == '__main__':
     print("~~~ Let main run ~~~")
-    tests()
-
-    # gc = GoogleCalendar(credentials_path='./credentials.json')
+    # tests()
+    gc = GoogleCalendar(credentials_path='./credentials.json')
+    for event in gc:
+        print(EventSerializer.to_json(event))
     # # Format: Year Month Day Hour Minute Second
     # # Add new event example:
-    start = datetime.datetime(2022, 9, 17, 9, 0, 0)
-    patient_id = 2
-    contact_id = 1
-    create_new_event(start, patient_id, contact_id)
-    #
+    # start = datetime.datetime(2022, 9, 17, 9, 0, 0)
+    # patient_id = 2
+    # contact_id = 1
+    # create_new_event(start, patient_id, contact_id)
+
     # add_new_google_calendar_event(start)
 
     # tz_string = datetime.datetime.now().astimezone().tzname()
@@ -360,7 +384,6 @@ if __name__ == '__main__':
     #     timezone = "+02:00"
 
     # Print all events from Calendar:
-    # for event in gc:
-    # print(EventSerializer.to_json(event))
+
 
     print("Done")
