@@ -5,7 +5,7 @@ import datetime
 import pytz
 from gcsa.serializers.event_serializer import EventSerializer
 
-from apps.authentication.models import Users, Patient, Contact, ContactsTime, Event
+from apps.authentication.models import Users, Patient, Contact, ContactTime, Event
 from apps import db
 import json
 
@@ -21,6 +21,7 @@ from gcsa.google_calendar import GoogleCalendar
 from gcsa.event import Event as GoogleEvent
 # from datetime import datetime, timezone
 from sqlalchemy import select
+from sqlalchemy.sql.expression import update
 
 
 import os.path
@@ -214,7 +215,6 @@ def generate_json():
         },
         'attendees': [
             {'email': 'lpage@example.com'},
-            {'email': 'sbrin@example.com'},
         ],
         "conferenceData": {
             "createRequest": {
@@ -252,7 +252,6 @@ def generated_json_test():
         "sequence": 0,
         "attendees": [
             {"email": "lpage@example.com", "responseStatus": "needsAction"},
-            {"email": "sbrin@example.com", "responseStatus": "needsAction"},
         ],
         "hangoutLink": "https://meet.google.com/vac-bieu-pzm",
         "conferenceData": {
@@ -298,7 +297,7 @@ def add_new_google_calendar_event(start_time, patient_name, contact_name):
     new_end_time = new_end_time.isoformat() + "+03:00"
     event_template['end']['dateTime'] = new_end_time
 
-    event_template['summary'] = "פגישה בין " + patient_name + " " + contact_name
+    event_template['summary'] = "פגישה בין " + str(patient_name) + " ל" + str(contact_name)
 
     print("event template new details are:", event_template)
 
@@ -316,8 +315,8 @@ def add_event_to_db(event, patient_id, contact_id):
     print("Adding event...")
     db_event = Event(url=event['hangoutLink'], event_id=event['id'], start_time=event['start']['dateTime'].split()[0],
                      status=0, patient_id=patient_id, contact_id=contact_id)
-    db.session.add(db_event)
-    db.session.commit()
+    session.add(db_event)
+    session.commit()
     print("Event added to db successfully!")
     return True
 
@@ -325,54 +324,66 @@ def add_event_to_db(event, patient_id, contact_id):
 def create_new_event(start, patient_id, contact_id):
     # Create a Google calendar event
     # should also take the p name and c name to do a beautiful title
-    patient_name = select(Patient.patient_name).where(Patient.patient_id == patient_id)
-    contact_name = select(Contact.f_name).where(Contact.contact_id == contact_id)
+    contact_name = session.query(Contact.f_name).filter(contact_id == contact_id).first()[0]
+    patient_name = session.query(Patient.f_name).filter(patient_id == patient_id).first()[0]
     event = add_new_google_calendar_event(start, patient_name, contact_name)
 
     # Add new event ID to our database event table
     add_event_to_db(event, patient_id, contact_id)
 
     # Add new event job in crony
+    # Need to get the robot locations and translate patient bed to robot location.
+    patient_bed = session.query(Patient.bed).filter(patient_id == patient_id).first()[0]
+    # Translate Bed to Robot Location:
+    # Add crony task:
 
     print("Im done!!! ")
+
 
 def delete_event(event_id):
     # Get event from Google Calendar and delete it:
     delete_calendar_event(event_id)
 
     # Set Event in db to status = 2
-    event = Event.query.filter_by(event_id=event_id).first_or_404()
-    event = event.status = 2
+    stmt = update(Event).where(Event.event_id == event_id).values(status='2')
+    engine.execute(stmt)
+    print("Event marked as deleted (status = 2) in Event table")
 
     # Delete task from chrony
 
-    print("Event deleted from system successfully")
+    print("Event deleted from whole system successfully")
+
 
 def delete_calendar_event(event_id):
     gc = GoogleCalendar(credentials_path='./credentials.json')
     event_to_be_deleted = gc.get_event(event_id)
     gc.delete_event(event_to_be_deleted)
-    print("Event deleted successfully")
+    print("Event deleted from calendar successfully")
 
 
 def tests():
     print("   tests   ")
     # gc = GoogleCalendar(credentials_path='./credentials.json')
+    patient_id = 56
+    # patient_name = session.query(Patient.f_name).filter_by(patient_id=patient_id).one()
+    # patient_name = session.query(Patient.f_name).filter(patient_id == patient_id).first()[0]
 
     # temp_json = generate_json_test()
     # add_event_to_db(temp_json, 7, 29)
 
+
 if __name__ == '__main__':
     print("~~~ Let main run ~~~")
     # tests()
-    gc = GoogleCalendar(credentials_path='./credentials.json')
-    for event in gc:
-        print(EventSerializer.to_json(event))
+    delete_event("qbdsapqc3fdlp87numfb2lbfgo")
+    # gc = GoogleCalendar(credentials_path='./credentials.json')
+    # for event in gc:
+    #     print(EventSerializer.to_json(event))
     # # Format: Year Month Day Hour Minute Second
     # # Add new event example:
-    # start = datetime.datetime(2022, 9, 17, 9, 0, 0)
-    # patient_id = 2
-    # contact_id = 1
+    # start = datetime.datetime(2022, 9, 18, 11, 0, 0)
+    # patient_id = 12
+    # contact_id = 13
     # create_new_event(start, patient_id, contact_id)
 
     # add_new_google_calendar_event(start)
@@ -384,6 +395,5 @@ if __name__ == '__main__':
     #     timezone = "+02:00"
 
     # Print all events from Calendar:
-
 
     print("Done")
