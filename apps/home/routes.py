@@ -2,11 +2,14 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
+from datetime import datetime
+from typing import Any
 
 from apps.home import blueprint
 from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
+import json
 from apps.authentication.models import Patient,Users
 
 @blueprint.route('/index')
@@ -39,6 +42,8 @@ def route_template(template):
     except:
         return render_template('home/page-500.html'), 500
 # Helper - Extract current page name from request
+
+
 def get_segment(request):
 
     try:

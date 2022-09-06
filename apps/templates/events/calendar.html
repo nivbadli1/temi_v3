@@ -28,7 +28,7 @@
   {% include "includes/sidenav-rtl.html" %}
     <main class="main-content position-relative border-radius-lg overflow-hidden">
 
-    % include "includes/navigation-rtl.html" %}
+    {% include "includes/navigation-rtl.html" %}
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -120,10 +120,47 @@
         </div>
         <!-- /.row -->
       </div><!-- /.container-fluid -->
+        <div class="card-header pb-0 px-3" dir="rtl">
+           <button type="button" class="btn btn-success float-right" id="editEventButton"
+                   data-toggle="modal" data-target="#add_new_contact_modal" style="display:none">הוספת איש קשר חדש
+           </button>
+       </div>
+
     </section>
     <!-- /.content -->
-  </div>
-<!--   /.content-wrapper -->
+
+                                <div id="add_new_contact_modal" class="modal fade" role="dialog" dir="rtl">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+
+                                            <h4 class="modal-title">אירוע</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="POST"
+                                                  action="">
+                                                <div class="form-group">
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <button class="btn btn-primary" type="submit">הוספת איש קשר חדש
+                                                    </button>
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                            </button>
+                                            <button type="button" class="btn cancel" onclick="closeForm()">Close 2</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+  </div><!--   /.content-wrapper -->
   </main>
 
 {% endblock content %}
@@ -151,6 +188,9 @@
   <script src="/static/assets/plugins/fullcalendar-bootstrap/main.min.js"></script>
   <!-- Page specific script -->
   <script>
+  document.addEventListener("DOMContentLoaded", function(event){
+  // your code here
+
     $(function () {
 
       /* initialize the external events
@@ -217,54 +257,20 @@
           center: 'title',
           right : 'dayGridMonth,timeGridWeek,timeGridDay'
         },
+
+
+
         'themeSystem': 'bootstrap',
         //Random default events
-        events    : [
-          {
-            title          : 'All Day Event',
-            start          : new Date(y, m, 1),
-            backgroundColor: '#f56954', //red
-            borderColor    : '#f56954', //red
-            allDay         : true
-          },
-          {
-            title          : 'Long Event',
-            start          : new Date(y, m, d - 5),
-            end            : new Date(y, m, d - 2),
-            backgroundColor: '#f39c12', //yellow
-            borderColor    : '#f39c12' //yellow
-          },
-          {
-            title          : 'Meeting',
-            start          : new Date(y, m, d, 10, 30),
-            allDay         : false,
-            backgroundColor: '#0073b7', //Blue
-            borderColor    : '#0073b7' //Blue
-          },
-          {
-            title          : 'Lunch',
-            start          : new Date(y, m, d, 12, 0),
-            end            : new Date(y, m, d, 14, 0),
-            allDay         : false,
-            backgroundColor: '#00c0ef', //Info (aqua)
-            borderColor    : '#00c0ef' //Info (aqua)
-          },
-          {
-            title          : 'Birthday Party',
-            start          : new Date(y, m, d + 1, 19, 0),
-            end            : new Date(y, m, d + 1, 22, 30),
-            allDay         : false,
-            backgroundColor: '#00a65a', //Success (green)
-            borderColor    : '#00a65a' //Success (green)
-          },
-          {
-            title          : 'Click for Google',
-            start          : new Date(y, m, 28),
-            end            : new Date(y, m, 29),
-            url            : 'https://www.google.com/',
-            backgroundColor: '#3c8dbc', //Primary (light-blue)
-            borderColor    : '#3c8dbc' //Primary (light-blue)
-          }
+        events: [
+            {% for event in gc %}
+                {
+                    id: '{{event.event_id}}',
+                    title: '{{event.summary}}',
+                    start: '{{event.start}}',
+                    end: '{{event.end}}'
+                },
+            {% endfor %}
         ],
         editable  : true,
         droppable : true, // this allows things to be dropped onto the calendar !!!
@@ -274,7 +280,16 @@
             // if so, remove the element from the "Draggable Events" list
             info.draggedEl.parentNode.removeChild(info.draggedEl);
           }
-        }
+        },
+         eventClick: function(info) {
+<!--           var modal = document.getElementById("add_new_contact_modal");-->
+<!--           alert('Event: ' + info.event.title);-->
+           info.jsEvent.preventDefault(); // don't let the browser navigate
+           console.log(info.event.id)
+           document.getElementById("editEventButton").click();
+<!--           modal.style.display = "block";-->
+         }
+
       });
 
       calendar.render();
@@ -318,6 +333,7 @@
         $('#new-event').val('')
       })
     })
+});
   </script>
 
 {% endblock javascripts %}

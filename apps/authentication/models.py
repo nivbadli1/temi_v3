@@ -4,6 +4,7 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask_login import UserMixin
+from datetime import datetime
 
 from apps import db, login_manager
 
@@ -78,21 +79,21 @@ class Contact(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id', ondelete='CASCADE', onupdate='CASCADE'),
                            index=True)
     events = db.relationship('Event', backref='contact', lazy='dynamic')
-    contacts_times = db.relationship('ContactTime', backref='contact', lazy='select')
+    contacts_times = db.relationship('ContactsTime', backref='contact', lazy='select')
 
-    # def __init__(self, patient_id, f_name, l_name, phone, mail, priority):
-    #     self.patient_id = patient_id
-    #     self.f_name = f_name
-    #     self.l_name = l_name
-    #     self.phone = phone
-    #     self.mail = mail
-    #     self.priority = priority
+    def __init__(self, patient_id, f_name, l_name, phone, mail, priority):
+        self.patient_id = patient_id
+        self.f_name = f_name
+        self.l_name = l_name
+        self.phone = phone
+        self.mail = mail
+        self.priority = priority
 
 
     def __repr__(self):
         return '<Contact: %s, %s, %s, %s, %s>' % (self.f_name, self.l_name, self.phone, self.mail, self.priority)
 
-class ContactTime(db.Model):
+class ContactsTime(db.Model):
     __tablename__ = 'contacts_times'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -147,13 +148,15 @@ class Event(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id'))
     start_time = db.Column(db.TIMESTAMP)
     status = db.Column(db.Integer)
-    row_created_time = db.Column(db.TIMESTAMP)
+    row_created_time = db.Column(db.TIMESTAMP, default=datetime.now())
 
-    def __init__(self, event_id, url, start_time, status):
+    def __init__(self, event_id, url, start_time, status, patient_id, contact_id):
         self.url = url
         self.event_id = event_id
         self.start_time = start_time
         self.status = status
+        self.patient_id = patient_id
+        self.contact_id = contact_id
 
 
 @login_manager.user_loader
