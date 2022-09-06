@@ -11,7 +11,7 @@ from flask_login import (
 )
 from apps.patients import blueprint
 from apps.patients.forms import PatientForm, ContactForm, ContactTimeForm
-from apps.authentication.models import Users, Patient, Contact
+from apps.authentication.models import Users, Patient, Contact, ContactTime
 from apps import db
 from apps.authentication.util import verify_pass
 
@@ -25,9 +25,9 @@ def tables():
     return render_template('patients/tables.html', patients=patients)
 
 
-@blueprint.route("/<int:patient_id>/patient", methods=['GET', 'POST'])
+@blueprint.route("/<int:patient_id>/update_patient", methods=['GET', 'POST'])
 @login_required
-def update(patient_id):
+def update_patient(patient_id):
     form = PatientForm()
     contact_form = ContactForm()
     # Get all attributes of the patient
@@ -57,9 +57,10 @@ def update(patient_id):
     return render_template('patients/patient_info.html', form=form, patient_id=patient_id, contacts=contacts,
                            contact_form=contact_form)
 
-@blueprint.route("/add", methods=['GET', 'POST'])
+
+@blueprint.route("/add_patient", methods=['GET', 'POST'])
 @login_required
-def add():
+def add_patient():
     form = PatientForm()
     # # Get all attributes of the patient
     # p = Patient.query.filter_by(patient_id=patient_id).first_or_404()
@@ -83,6 +84,20 @@ def add():
 
     # return render_template('patients/patient_info.html',form=form, patient_id=patient_id)
 
+
+@blueprint.route("/<int:patient_id>/delete_patient", methods=['GET', 'POST'])
+@login_required
+def delete_patient(patient_id):
+    try:
+        patient_id = Patient.query.get(patient_id)
+        db.session.delete(patient_id)
+        db.session.commit()
+    except:
+        print("Error")
+        # flash("מטופל לא קיים")
+    return redirect(url_for('patients_blueprint.tables'))
+
+
 @blueprint.route("/<int:patient_id>/patient_info", methods=['GET', 'POST'])
 @login_required
 def patient_info(patient_id):
@@ -101,25 +116,13 @@ def patient_info(patient_id):
         patient_form.max_calls.data = patient.max_calls
         # contacts = p.contacts
     return render_template('patients/patient_info.html', patient_form=patient_form, patient_id=patient_id,
-                           patient=patient, contact_form=contact_form,contact_time_form=contact_time_form)
+                           patient=patient, contact_form=contact_form, contact_time_form=contact_time_form)
 
 
 # Contacts functions
-@blueprint.route('/<int:contact_id>/delete_contact', methods=['GET', 'POST'])
-def delete_contact(contact_id):
-    contact = Contact.query.get(contact_id)
-    patient_id = contact.patient_id
-    print(f"contact is is:{contact_id} and patient_id is:{patient_id}")
-    db.session.delete(contact)
-    db.session.commit()
-    flash("contact Deleted Successfully")
 
-    return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
-
-
-# this route is for inserting data
-# to mysql database via html forms
 @blueprint.route('/<int:patient_id>/add_contact', methods=['GET', 'POST'])
+@login_required
 def add_contact(patient_id):
     form = ContactForm()
     print(patient_id)
@@ -131,6 +134,19 @@ def add_contact(patient_id):
         db.session.add(contact)
         db.session.commit()
         flash("איש הקשר נוסף בהצלחה")
+    return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
+
+
+@blueprint.route('/<int:contact_id>/delete_contact', methods=['GET', 'POST'])
+@login_required
+def delete_contact(contact_id):
+    contact = Contact.query.get(contact_id)
+    patient_id = contact.patient_id
+    print(f"contact is is:{contact_id} and patient_id is:{patient_id}")
+    db.session.delete(contact)
+    db.session.commit()
+    flash("contact Deleted Successfully")
+
     return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
 
 
@@ -150,27 +166,51 @@ def edit_contact(contact_id):
 
     return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
 
-
-@blueprint.route("/<int:patient_id>/delete", methods=['GET', 'POST'])
+# Contactime functions
+@blueprint.route("/<int:contact_id>/add_contact_time", methods=['GET', 'POST'])
 @login_required
-def delete(patient_id):
-    try:
-        patient_id = Patient.query.get(patient_id)
-        db.session.delete(patient_id)
+def add_contact_time(contact_id):
+    contact_time_form = ContactTimeForm()
+    contact = contact = Contact.query.get(contact_id)
+    if request.method == 'POST':
+        time = ContactTime(contact_id=contact.contact_id,
+                           day=contact_time_form.day.data,
+                           from_hour=contact_time_form.from_hour.data,
+                           to_hour=contact_time_form.to_hour.data)
+        db.session.add(time)
         db.session.commit()
-    except:
-        print("Error")
-        # flash("מטופל לא קיים")
-    return redirect(url_for('patients_blueprint.tables'))
+        flash("איש הקשר נוסף בהצלחה")
+    return redirect(url_for('patients_blueprint.patient_info', patient_id=contact.patient.patient_id))
 
-@blueprint.route("/<int:contact_id>/get_contact_times", methods=['GET', 'POST'])
+@blueprint.route('/<int:time_id>/edit_contact_time', methods=['GET', 'POST'])
 @login_required
-def get_contact_times(contact_id):
-    try:
-        patient_id = Patient.query.get(patient_id)
-        db.session.delete(patient_id)
+def edit_contact_time(time_id):
+    contact_time_form = ContactTimeForm()
+    time = ContactTime.query.get(id=time_id)
+    contact_id = time.contact_id
+    patient_id = contact_id.patient_id
+    if request.method == 'POST':
+        time.day = contact_time_form.day.data
+        time.from_hour = contact_time_form.from_hour.data
+        time.to_hour = contact_time_form.to_hour.data
+        time.contact_id = contact_id.patient_id
         db.session.commit()
-    except:
-        print("Error")
-        # flash("מטופל לא קיים")
-    return redirect(url_for('patients_blueprint.tables'))
+        flash("איש הקשר עודכן בהצלחה")
+
+    if request.method == "GET":
+        contact_time_form.day.data = time.day
+        contact_time_form.from_hour.data = time.from_hour
+        contact_time_form.to_hour.data = time.to_hour
+    return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
+
+@blueprint.route('/<int:time_id>/delete_contact_time', methods=['GET', 'POST'])
+@login_required
+def delete_contact_time(time_id):
+    contact_time = ContactTime.query.get(time_id)
+    patient_id = contact_time.contact.patient.patient_id
+    print(f"contact_time is:{contact_time} and patient_id is:{patient_id} and contact is {contact_time.contact}")
+    db.session.delete(contact_time)
+    db.session.commit()
+    flash("contact time deleted Successfully")
+
+    return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))

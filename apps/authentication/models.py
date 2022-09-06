@@ -78,7 +78,7 @@ class Contact(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id', ondelete='CASCADE', onupdate='CASCADE'),
                            index=True)
     events = db.relationship('Event', backref='contact', lazy='dynamic')
-    contacts_times = db.relationship('ContactsTime', backref='contact', lazy='select')
+    contacts_times = db.relationship('ContactTime', backref='contact', lazy='select')
 
     # def __init__(self, patient_id, f_name, l_name, phone, mail, priority):
     #     self.patient_id = patient_id
@@ -92,24 +92,24 @@ class Contact(db.Model):
     def __repr__(self):
         return '<Contact: %s, %s, %s, %s, %s>' % (self.f_name, self.l_name, self.phone, self.mail, self.priority)
 
-class ContactsTime(db.Model):
+class ContactTime(db.Model):
     __tablename__ = 'contacts_times'
 
     id = db.Column(db.Integer, primary_key=True)
     day = db.Column(db.Integer)
     contact_id = db.Column(db.Integer,db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'),
                            index=True)
-    _from = db.Column('from', db.Time)
-    to = db.Column(db.Time)
+    from_hour = db.Column( db.Time)
+    to_hour = db.Column(db.Time)
     contacts = db.relationship(Contact,backref='contact')
-    def __init__(self, contact_id, day, _from, to):
+    def __init__(self, contact_id, day, from_hour, to_hour):
         self.contact_id = contact_id
         self.day = day
-        self._from = _from
-        self.to = to
+        self.from_hour = from_hour
+        self.to_hour = to_hour
 
     def __repr__(self):
-        return '<Time: %s, %s, %s, %s, %s>' % (self.day, self.contact_id, self._from, self.to, self.contact_id)
+        return '<Time: %s, %s, %s, %s, %s>' % (self.day, self.from_hour, self.to_hour, self.id, self.contact_id)
 
 class DepartmentsTimes(db.Model):
     __tablename__ = 'departments_times'
