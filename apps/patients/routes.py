@@ -17,33 +17,31 @@ from apps.authentication.util import verify_pass
 
 
 # Patients functions
-@blueprint.route('/tables', methods=['GET', 'POST'])
+@blueprint.route('/patients_list', methods=['GET', 'POST'])
 @login_required
-def tables():
+def patients_list():
     # flash('You have subscribed to the newsletter!', 'success')
     patients = Patient.query.all()
-    return render_template('patients/tables.html', patients=patients)
-
+    return render_template('patients/patients_list.html', patients=patients)
 
 @blueprint.route("/<int:patient_id>/update_patient", methods=['GET', 'POST'])
 @login_required
 def update_patient(patient_id):
     form = PatientForm()
-    contact_form = ContactForm()
     # Get all attributes of the patient
     p = Patient.query.filter_by(patient_id=patient_id).first_or_404()
 
-    # If request.method == 'POST' update patient information
-    if form.validate_on_submit():
+    if request.method == 'POST':
         p.patient_id = form.patient_id.data
         p.f_name = form.f_name.data
         p.l_name = form.l_name.data
         p.bed = form.bed.data
-        p.department = form.department.data
+        p.department = current_user.id
         p.max_calls = form.max_calls.data
         db.session.commit()
         # flash("מטופל {} עודכן בהצלחה".format(p.f_name))
-        return redirect(url_for('patients.list', patient_id=p.patient_id))
+        if 'patients_list' in request.form:
+            return redirect(url_for('patients.list'))
     # If request.method == 'GET' get patient information
     elif request.method == 'GET':
         form.patient_id.data = p.patient_id
@@ -52,10 +50,9 @@ def update_patient(patient_id):
         form.bed.data = p.bed
         form.department.data = p.department
         form.max_calls.data = p.max_calls
-        contacts = Patient.query.get(patient_id).contacts
+        # contacts = Patient.query.get(patient_id).contacts
         # session.query(ContactsTime).filter_by(patient_id=4).all()
-    return render_template('patients/patient_info.html', form=form, patient_id=patient_id, contacts=contacts,
-                           contact_form=contact_form)
+    return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
 
 
 @blueprint.route("/add_patient", methods=['GET', 'POST'])
@@ -72,12 +69,12 @@ def add_patient():
             f_name=form.f_name.data,
             l_name=form.l_name.data,
             bed=form.bed.data,
-            department=form.department.data,
+            department=current_user.id,
             max_calls=form.max_calls.data
         )
         db.session.add(p)
         db.session.commit()
-        return redirect(url_for('patients_blueprint.tables'))
+        return redirect(url_for('patients_blueprint.patient_info',patient_id = form.patient_id.data))
         # return redirect(url_for('patients_blueprint.patient_info', patient_id=p.patient_id))
         # flash("מטופל {} עודכן בהצלחה".format(p.f_name))
     return render_template('patients/add_patient.html', form=form)
@@ -95,7 +92,7 @@ def delete_patient(patient_id):
     except:
         print("Error")
         # flash("מטופל לא קיים")
-    return redirect(url_for('patients_blueprint.tables'))
+    return redirect(url_for('patients_blueprint.patients_list'))
 
 
 @blueprint.route("/<int:patient_id>/patient_info", methods=['GET', 'POST'])
@@ -115,7 +112,7 @@ def patient_info(patient_id):
         patient_form.department.data = patient.department
         patient_form.max_calls.data = patient.max_calls
         # contacts = p.contacts
-    return render_template('patients/patient_info.html', patient_form=patient_form, patient_id=patient_id,
+    return render_template('patients/patient_info.html', patient_form=patient_form,
                            patient=patient, contact_form=contact_form, contact_time_form=contact_time_form)
 
 
@@ -150,8 +147,8 @@ def delete_contact(contact_id):
     return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
 
 
-@blueprint.route('/<int:contact_id>/edit_contact', methods=['GET', 'POST'])
-def edit_contact(contact_id):
+@blueprint.route('/<int:contact_id>/update_contact', methods=['GET', 'POST'])
+def update_contact(contact_id):
     contact_form = ContactForm()
     contact = Contact.query.get(contact_id)
     patient_id = contact.patient_id
@@ -161,6 +158,7 @@ def edit_contact(contact_id):
         contact.mail = contact_form.mail.data
         contact.phone = contact_form.phone.data
         contact.priority = contact_form.priority.data
+
         db.session.commit()
         flash("איש הקשר עודכן בהצלחה")
 
