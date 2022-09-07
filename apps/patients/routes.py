@@ -173,16 +173,16 @@ def add_contact_time(contact_id):
     if request.method == 'POST':
         time = ContactTime(contact_id=contact.contact_id,
                            day=contact_time_form.day.data,
-                           from_hour=contact_time_form.from_hour.data,
-                           to_hour=contact_time_form.to_hour.data)
+                           from_hour=dict(contact_time_form.from_hour.choices).get(contact_time_form.from_hour.data),
+                           to_hour=dict(contact_time_form.to_hour.choices).get(contact_time_form.to_hour.data))
         db.session.add(time)
         db.session.commit()
-        flash("איש הקשר נוסף בהצלחה")
+        flash("זמן איש הקשר הוסף בהצלחה")
     return redirect(url_for('patients_blueprint.patient_info', patient_id=contact.patient.patient_id))
 
-@blueprint.route('/<int:time_id>/edit_contact_time', methods=['GET', 'POST'])
+@blueprint.route('/<int:time_id>/update_contact_time', methods=['GET', 'POST'])
 @login_required
-def edit_contact_time(time_id):
+def update_contact_time(time_id):
     contact_time_form = ContactTimeForm()
     time = ContactTime.query.get(id=time_id)
     contact_id = time.contact_id
