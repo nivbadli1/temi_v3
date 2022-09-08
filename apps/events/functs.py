@@ -375,16 +375,16 @@ def tests():
 if __name__ == '__main__':
     print("~~~ Let main run ~~~")
     # tests()
-    delete_event("qbdsapqc3fdlp87numfb2lbfgo")
+    # delete_event("qbdsapqc3fdlp87numfb2lbfgo")
     # gc = GoogleCalendar(credentials_path='./credentials.json')
     # for event in gc:
     #     print(EventSerializer.to_json(event))
     # # Format: Year Month Day Hour Minute Second
     # # Add new event example:
-    # start = datetime.datetime(2022, 9, 18, 11, 0, 0)
-    # patient_id = 12
-    # contact_id = 13
-    # create_new_event(start, patient_id, contact_id)
+    start = datetime.datetime(2022, 9, 21, 11, 0, 0)
+    patient_id = 12
+    contact_id = 13
+    create_new_event(start, patient_id, contact_id)
 
     # add_new_google_calendar_event(start)
 

@@ -146,8 +146,14 @@
                                                     <button class="btn btn-primary" type="submit">הוספת איש קשר חדש
                                                     </button>
                                                 </div>
-
                                             </form>
+                                        <form method="POST" action="{{ url_for('events_blueprint.delete_event')}}">
+                                            info.event.id =
+                                            <script type="text/javascript">
+                                            document.write(ginfo.event.id)
+                                            </script>
+                                            <input class="btn btn-danger" type="submit" value="מחיקה">
+                                        </form>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
@@ -168,6 +174,13 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+
+<script>
+<!--      function setVariable(current_event_id) {-->
+<!--    console.log('is it working?');-->
+<!--    console.log(`current_event_id = ${current_event_id}`);-->
+<!--  }-->
+</script>
 
   <!-- jQuery -->
   <script src="/static/assets/plugins/jquery/jquery.min.js"></script>
@@ -285,7 +298,10 @@
 <!--           var modal = document.getElementById("add_new_contact_modal");-->
 <!--           alert('Event: ' + info.event.title);-->
            info.jsEvent.preventDefault(); // don't let the browser navigate
-           console.log(info.event.id)
+           console.log(info.event.id);
+           var ginfo = info
+           console.log(`{{current_event_id}} = ${info.event.id}`);
+           console.log("Event written in db");
            document.getElementById("editEventButton").click();
 <!--           modal.style.display = "block";-->
          }
