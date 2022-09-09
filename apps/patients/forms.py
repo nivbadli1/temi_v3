@@ -23,7 +23,6 @@ class PatientForm(FlaskForm):
     max_calls = IntegerField('מספר שיחות שבועיות', validators=[DataRequired()])
     select_list = SelectField('idates', validators=[DataRequired()])
 
-
 class ContactForm(FlaskForm):
     f_name = StringField('שם פרטי', validators=[DataRequired()])
     l_name = StringField('שם משפחה', validators=[DataRequired()])
@@ -34,6 +33,6 @@ class ContactForm(FlaskForm):
 
 
 class ContactTimeForm(FlaskForm):
-    day = SelectField('יום',choices=get_days_list(), validators=[DataRequired()])
-    from_hour = SelectField('משעה',choices=get_times_list(), validators=[DataRequired()])
-    to_hour = SelectField('עד שעה',choices=get_times_list(), validators=[DataRequired()])
+    day = SelectField('יום', choices=get_days_list(), validators=[DataRequired()])
+    from_hour = SelectField('משעה', choices=get_times_list(), validators=[DataRequired()])
+    to_hour = SelectField('עד שעה', choices=get_times_list(), validators=[DataRequired()])

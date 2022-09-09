@@ -29,7 +29,7 @@ def route_template(template):
 
         # Detect the current page
         segment = get_segment(request)
-        # if segment == "tables.html":
+        # if segment == "patients_list.html":
         #     patients = patients.list()
         #     return render_template("home/" + template, segment=segment, patients=patients)
 
