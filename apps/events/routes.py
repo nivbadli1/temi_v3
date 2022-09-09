@@ -18,14 +18,12 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 
 from flask import Flask, render_template, request, redirect, url_for, flash
-
+from apps.events import functions
 from apps.events.forms import EventForm
 
-e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
-engine = create_engine(e)
-session = Session(engine)
-
-current_event_id = ""
+# e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
+# engine = create_engine(e)
+# session = Session(engine)
 
 
 @blueprint.route('/calendar', methods=['GET', 'POST'])
@@ -46,10 +44,7 @@ def calendar():
 #     event = GoogleEvent('Call between {} and {}', patientID, contactID, start=startTime, end=startTime + 20)
 #     print("The event is: {} ", event.__str__())
 #
-
 # 2022-09-03 22:42:06
-
-# current_event_id = 0
 
 
 @blueprint.route('/delete_event', methods=['GET', 'POST'])
@@ -60,9 +55,11 @@ def delete_event():
         try:
             # Both work, keep as option
             eventID = form.eventID.data
-            variable = request.form.get("eventID")
-            stmt = update(Event).where(Event.event_id == variable).values(status='2')
-            engine.execute(stmt)
+            # variable = request.form.get("eventID")
+
+            # Add delete logic here:
+            # delete_event_real(eventID)
+            functions.delete_event_func(eventID)
         except:
             flash("Invalid type for variable")
 
