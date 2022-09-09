@@ -135,34 +135,31 @@
   </div><!--   /.content-wrapper -->
 
 
-                <div id="add_new_contact_modal" class="modal fade" role="dialog" dir="rtl">
-                                  <div class="modal-dialog">
-
-                                    <div class="modal-content">
+                <div id="add_new_contact_modal" class="modal" role="dialog" dir="rtl">
+                   <div class="modal-dialog">
+                      <div class="modal-content">
 
                                       <div class="modal-header">
                                             <h4 class="modal-title">אירוע</h4>
                                       </div>
 
                                       <div class="modal-body">
-                                        <form method="POST" action="{{ url_for('events_blueprint.delete_event', current_event_id = current_event_id)}}">
-<!--                                        <input type="text" name="eventID" id="eventID" value="" disabled/> // <- here we got the event ID-->
-<!--                                          <input class="btn btn-danger" type="submit" value="מחיקה">-->
+                                        <form method="POST" action="{{ url_for('events_blueprint.delete_event', eventForm=eventForm)}}">
+                                          <label for="eventID">Event ID:</label>
+                                          <input type="text" name="eventID" id="eventID" value="" readonly/>
 
-                                        <div class="form-group col-md-3">
-                                         {{ form.event_id.label(class="form-control-label") }}
-                                         {{ form.event_id(class="form-control",value=eventID) }}
-                                        </div>
+                                          <input class="btn btn-danger" type="submit" value="מחק אירוע">
                                         </form>
                                       </div>
 
                                       <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
-                                            </button>
+                                          <button type="button"
+                                                  class="btn btn-secondary"
+                                                  onclick="closemodal();">Close
+                                          </button>
                                       </div>
-                                    </div>
-
-                                  </div>
+                      </div>
+                   </div>
                 </div>
 
 
@@ -176,11 +173,9 @@
 
 <script>
 
-<!--$(document).ready(function(){-->
-<!--    function closemodal() {-->
-<!--       $('#add_new_contact_modal').modal('toggle');-->
-<!--    }-->
-<!--});-->
+function closemodal() {
+      $('#add_new_contact_modal').modal('hide');
+};
 
 
 </script>
@@ -305,6 +300,7 @@
            console.log(info.event.id);
            var eventID_num = info.event.id;
            $(".modal-body #eventID").val( eventID_num );
+           $(".modal-body #event_id_from_google").val( eventID_num );
            $("#add_new_contact_modal").modal('show');
          }
 

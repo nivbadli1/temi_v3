@@ -33,7 +33,7 @@ current_event_id = ""
 def calendar():
     eventForm = EventForm()
     gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
-    return render_template('events/calendar.html', gc=gc, form=eventForm)
+    return render_template('events/calendar.html', gc=gc, eventForm=eventForm)
 
 
 # Get the minial vars need to create a google event. gets IU and later save it in db
@@ -52,13 +52,15 @@ def calendar():
 # current_event_id = 0
 
 
-@blueprint.route('/calendar/delete_event/', methods=['GET', 'POST'])
+@blueprint.route('/delete_event', methods=['GET', 'POST'])
 @login_required
-def delete_event(current_event_id):
-    # global current_event_id
+def delete_event():
+    form = EventForm()
     if request.method == "POST":
         try:
-            variable = str(request.form.get("current_event_id"))
+            # Both work, keep as option
+            eventID = form.eventID.data
+            variable = request.form.get("eventID")
             stmt = update(Event).where(Event.event_id == variable).values(status='2')
             engine.execute(stmt)
         except:

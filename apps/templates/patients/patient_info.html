@@ -97,7 +97,7 @@
                                                   action="{{ url_for('patients_blueprint.update_patient',patient_id=patient.patient_id) }}">
                                                 <div class="form-group">
                                                     {{ patient_form.f_name.label(class="form-control-label") }}
-                                                    {{ patient_form.f_name(class="form-control",valfue=patient.f_name) }}
+                                                    {{ patient_form.f_name(class="form-control",value=patient.f_name) }}
 
                                                 </div>
 
@@ -400,7 +400,9 @@
                                                                 <div class="modal-header">
                                                                     <h4 class="modal-title">
                                                                         עריכת חלון
-                                                                        זמן</h4>
+                                                                        זמן
+                                                                    {{ time.day }} 3, 5, 6....
+                                                                    </h4>
                                                                 </div>
                                                                 <div class="modal-body">
 
