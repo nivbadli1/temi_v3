@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 
-
+from apps.events.forms import EventForm
 
 e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
 engine = create_engine(e)
@@ -27,11 +27,13 @@ session = Session(engine)
 
 current_event_id = ""
 
+
 @blueprint.route('/calendar', methods=['GET', 'POST'])
 @login_required
 def calendar():
+    eventForm = EventForm()
     gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
-    return render_template('events/calendar.html', gc=gc, current_event_id=current_event_id)
+    return render_template('events/calendar.html', gc=gc, form=eventForm)
 
 
 # Get the minial vars need to create a google event. gets IU and later save it in db
@@ -39,21 +41,21 @@ def calendar():
 
 
 # Get an EVENT ID (probably from UI function after selecting an event) and delete both from google calender and set status in event tables
-def deleteCalanderEvent(patientID, contactID, startTime):
-    # First, create an Event object:
-    event = GoogleEvent('Call between {} and {}', patientID, contactID, start=startTime, end=startTime + 20)
-    print("The event is: {} ", event.__str__())
-
+# def deleteCalanderEvent(patientID, contactID, startTime):
+#     # First, create an Event object:
+#     event = GoogleEvent('Call between {} and {}', patientID, contactID, start=startTime, end=startTime + 20)
+#     print("The event is: {} ", event.__str__())
+#
 
 # 2022-09-03 22:42:06
 
 # current_event_id = 0
 
 
-@blueprint.route('/delete_event', methods=['GET', 'POST'])
+@blueprint.route('/calendar/delete_event/', methods=['GET', 'POST'])
 @login_required
-def delete_event():
-    global current_event_id
+def delete_event(current_event_id):
+    # global current_event_id
     if request.method == "POST":
         try:
             variable = str(request.form.get("current_event_id"))

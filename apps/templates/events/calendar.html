@@ -129,44 +129,43 @@
     </section>
     <!-- /.content -->
 
-                                <div id="add_new_contact_modal" class="modal fade" role="dialog" dir="rtl">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-
-                                            <h4 class="modal-title">אירוע</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form method="POST"
-                                                  action="">
-                                                <div class="form-group">
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <button class="btn btn-primary" type="submit">הוספת איש קשר חדש
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        <form method="POST" action="{{ url_for('events_blueprint.delete_event')}}">
-                                            info.event.id =
-                                            <script type="text/javascript">
-                                            document.write(ginfo.event.id)
-                                            </script>
-                                            <input class="btn btn-danger" type="submit" value="מחיקה">
-                                        </form>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
-                                            </button>
-                                            <button type="button" class="btn cancel" onclick="closeForm()">Close 2</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
 
 
   </div><!--   /.content-wrapper -->
+
+
+                <div id="add_new_contact_modal" class="modal fade" role="dialog" dir="rtl">
+                                  <div class="modal-dialog">
+
+                                    <div class="modal-content">
+
+                                      <div class="modal-header">
+                                            <h4 class="modal-title">אירוע</h4>
+                                      </div>
+
+                                      <div class="modal-body">
+                                        <form method="POST" action="{{ url_for('events_blueprint.delete_event', current_event_id = current_event_id)}}">
+<!--                                        <input type="text" name="eventID" id="eventID" value="" disabled/> // <- here we got the event ID-->
+<!--                                          <input class="btn btn-danger" type="submit" value="מחיקה">-->
+
+                                        <div class="form-group col-md-3">
+                                         {{ form.event_id.label(class="form-control-label") }}
+                                         {{ form.event_id(class="form-control",value=eventID) }}
+                                        </div>
+                                        </form>
+                                      </div>
+
+                                      <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                            </button>
+                                      </div>
+                                    </div>
+
+                                  </div>
+                </div>
+
+
   </main>
 
 {% endblock content %}
@@ -176,10 +175,14 @@
 {% block javascripts %}
 
 <script>
-<!--      function setVariable(current_event_id) {-->
-<!--    console.log('is it working?');-->
-<!--    console.log(`current_event_id = ${current_event_id}`);-->
-<!--  }-->
+
+<!--$(document).ready(function(){-->
+<!--    function closemodal() {-->
+<!--       $('#add_new_contact_modal').modal('toggle');-->
+<!--    }-->
+<!--});-->
+
+
 </script>
 
   <!-- jQuery -->
@@ -295,15 +298,14 @@
           }
         },
          eventClick: function(info) {
-<!--           var modal = document.getElementById("add_new_contact_modal");-->
 <!--           alert('Event: ' + info.event.title);-->
            info.jsEvent.preventDefault(); // don't let the browser navigate
+           var modal = document.getElementById("add_new_contact_modal");
+           console.log("Chosen event ID is:");
            console.log(info.event.id);
-           var ginfo = info
-           console.log(`{{current_event_id}} = ${info.event.id}`);
-           console.log("Event written in db");
-           document.getElementById("editEventButton").click();
-<!--           modal.style.display = "block";-->
+           var eventID_num = info.event.id;
+           $(".modal-body #eventID").val( eventID_num );
+           $("#add_new_contact_modal").modal('show');
          }
 
       });
