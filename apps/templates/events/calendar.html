@@ -144,15 +144,14 @@
                                       </div>
 
                                       <div class="modal-body">
-                                        <form method="POST" action="{{ url_for('events_blueprint.delete_event', eventForm=eventForm)}}">
+                                        <form id="delete_this_event" method="POST" action="{{ url_for('events_blueprint.delete_event', eventForm=eventForm)}}">
                                           <label for="eventID">Event ID:</label>
-                                          <input type="text" name="eventID" id="eventID" value="" readonly/>
+                                          <input type="hidden" name="eventID" id="eventID" value="" readonly/>
 
-                                          <input class="btn btn-danger" type="submit" value="מחק אירוע">
                                         </form>
                                       </div>
-
                                       <div class="modal-footer">
+                                      <input class="btn btn-danger" type="submit" form="delete_this_event" value="מחק אירוע">
                                           <button type="button"
                                                   class="btn btn-secondary"
                                                   onclick="closemodal();">Close
