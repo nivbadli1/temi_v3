@@ -6,10 +6,11 @@ Copyright (c) 2019 - present AppSeed.us
 from flask import render_template, redirect, request, url_for, session, flash, jsonify
 from flask_login import login_required
 
-# from apps.patients import blueprint
+# GCSA
 from gcsa.google_calendar import GoogleCalendar
 from gcsa.event import Event as GoogleEvent
 
+# Internal classes imports:
 from apps.events import blueprint
 from apps.authentication.models import Users, Patient, Contact, ContactTime, Event
 from apps import db
@@ -34,16 +35,7 @@ def calendar():
     return render_template('events/calendar.html', gc=gc, eventForm=eventForm)
 
 
-# Get the minial vars need to create a google event. gets IU and later save it in db
-# def createCalendarEvent():
 
-
-# Get an EVENT ID (probably from UI function after selecting an event) and delete both from google calender and set status in event tables
-# def deleteCalanderEvent(patientID, contactID, startTime):
-#     # First, create an Event object:
-#     event = GoogleEvent('Call between {} and {}', patientID, contactID, start=startTime, end=startTime + 20)
-#     print("The event is: {} ", event.__str__())
-#
 # 2022-09-03 22:42:06
 
 

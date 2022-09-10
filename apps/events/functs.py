@@ -297,7 +297,7 @@ def add_new_google_calendar_event(start_time, patient_name, contact_name):
     new_end_time = new_end_time.isoformat() + "+03:00"
     event_template['end']['dateTime'] = new_end_time
 
-    event_template['summary'] = "פגישה בין " + str(patient_name) + " ל" + str(contact_name)
+    event_template['summary'] = "פגישה בין " + patient_name + " ל" + contact_name
 
     print("event template new details are:", event_template)
 
@@ -324,8 +324,9 @@ def add_event_to_db(event, patient_id, contact_id):
 def create_new_event(start, patient_id, contact_id):
     # Create a Google calendar event
     # should also take the p name and c name to do a beautiful title
-    contact_name = session.query(Contact.f_name).filter(contact_id == contact_id).first()[0]
-    patient_name = session.query(Patient.f_name).filter(patient_id == patient_id).first()[0]
+    contact_name = session.query(Contact.f_name).filter(Contact.contact_id == contact_id).first()[0]
+    patient_name = session.query(Patient.f_name).filter(Patient.patient_id == patient_id).first()[0]
+    print("P: {} {}, C: {} {}", patient_name, patient_id, contact_name, contact_id)
     event = add_new_google_calendar_event(start, patient_name, contact_name)
 
     # Add new event ID to our database event table
@@ -371,6 +372,23 @@ def tests():
     # temp_json = generate_json_test()
     # add_event_to_db(temp_json, 7, 29)
 
+def generateSomeEvents():
+    start = datetime.datetime(2022, 9, 23, 11, 0, 0)
+    patient_id = 12
+    contact_id = 13
+    create_new_event(start, patient_id, contact_id)
+
+    start = datetime.datetime(2022, 9, 22, 12, 0, 0)
+    patient_id = 2
+    contact_id = 30
+    create_new_event(start, patient_id, contact_id)
+
+    start = datetime.datetime(2022, 9, 21, 16, 0, 0)
+    patient_id = 4
+    contact_id = 27
+    create_new_event(start, patient_id, contact_id)
+
+
 
 if __name__ == '__main__':
     print("~~~ Let main run ~~~")
@@ -381,11 +399,11 @@ if __name__ == '__main__':
     #     print(EventSerializer.to_json(event))
     # # Format: Year Month Day Hour Minute Second
     # # Add new event example:
-    start = datetime.datetime(2022, 9, 23, 11, 0, 0)
-    patient_id = 12
-    contact_id = 13
-    create_new_event(start, patient_id, contact_id)
-
+    # start = datetime.datetime(2022, 9, 23, 11, 0, 0)
+    # patient_id = 12
+    # contact_id = 13
+    # create_new_event(start, patient_id, contact_id)
+    generateSomeEvents()
     # add_new_google_calendar_event(start)
 
     # tz_string = datetime.datetime.now().astimezone().tzname()

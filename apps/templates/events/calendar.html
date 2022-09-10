@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="/static/assets/plugins/fullcalendar-bootstrap/main.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
+  <link rel="stylesheet" href="/static/assets/css/events.css"
 
 {% endblock stylesheets %}
 
@@ -140,22 +141,26 @@
                       <div class="modal-content">
 
                                       <div class="modal-header">
-                                            <h4 class="modal-title">אירוע</h4>
+                                            <h4 class="modal-title">צפייה באירוע</h4>
                                       </div>
 
                                       <div class="modal-body">
                                         <form id="delete_this_event" method="POST" action="{{ url_for('events_blueprint.delete_event', eventForm=eventForm)}}">
-                                          <label for="eventID">Event ID:</label>
+
+                                          <label class="prettyLabel" for="eventID">האירוע מתחיל בשעה:</label>
+                                          <input class="eventTimes" type="text" name="" style="width:100%" id="eventStartTime" value="" readonly />
+
+                                          <label class="prettyLabel" for="eventID">האירוע נגמר בשעה:</label>
+                                          <input class="eventTimes" type="text" name="" style="width:100%" id="eventEndTime" value="" readonly />
+
                                           <input type="hidden" name="eventID" id="eventID" value="" readonly/>
 
                                         </form>
                                       </div>
                                       <div class="modal-footer">
+                                      <input class="btn btn-warning" type="submit" form="" value="עריכת אירוע">
                                       <input class="btn btn-danger" type="submit" form="delete_this_event" value="מחק אירוע">
-                                          <button type="button"
-                                                  class="btn btn-secondary"
-                                                  onclick="closemodal();">Close
-                                          </button>
+                                      <button type="button" class="btn btn-secondary" onclick="closemodal();">סגירה</button>
                                       </div>
                       </div>
                    </div>
@@ -298,8 +303,11 @@ function closemodal() {
            console.log("Chosen event ID is:");
            console.log(info.event.id);
            var eventID_num = info.event.id;
+
            $(".modal-body #eventID").val( eventID_num );
-           $(".modal-body #event_id_from_google").val( eventID_num );
+           $(".modal-body #eventStartTime").val( info.event.start );
+           $(".modal-body #eventEndTime").val( info.event.end );
+
            $("#add_new_contact_modal").modal('show');
          }
 
