@@ -41,7 +41,7 @@
                     </div>
 
                     <div>
-                        <button type="button" class="btn btn-success float-right" onclick="load_days();"
+                        <button type="button" class="btn btn-success float-right" onclick="load_days(); load_patients();"
                                 data-toggle="modal" data-target="#add_new_event_modal">אירוע חדש דנדש
                         </button>
                     </div>
@@ -137,7 +137,6 @@
 
     </div><!--   /.content-wrapper -->
 
-    Add New Event Modal:
     <div id="add_new_event_modal" class="modal fade" role="dialog" dir="rtl">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -277,6 +276,21 @@ function closemodal() {
         });
     });
 };
+
+    function load_patients() {
+    fetch('/events/patients_list').then(function(response) {
+        response.json().then(function(data) {
+           console.table(data);
+           let optionHTML_patients = '';
+           for (let patient of data.patients) {
+                    optionHTML_patients += '<option value="' + patient.id + '">' + patient.f_name + ' ' + patient.l_name + '</option>';
+                }
+           patient_select.innerHTML = optionHTML_patients;
+        });
+    });
+};
+
+
 
     days_select.onchange = function() {
     var day_chosen = days_select.options[days_select.selectedIndex].value;

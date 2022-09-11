@@ -39,6 +39,19 @@ def replace_num_with_hebrew_day(day):
 
 #### Create New Event Related Functions ####
 ## Form UI Generator ##
+
+# Generate a json patients names/ID to present in UI andhandle in backend
+def generate_patiens_json():
+    patients = Patient.query.with_entities(Patient.patient_id, Patient.f_name, Patient.l_name)
+    patientsArray = []
+
+    for patient in patients:
+        patientObj = {'id': patient.patient_id, 'f_name': patient.f_name, 'l_name': patient.l_name}
+        patientsArray.append(patientObj)
+
+    # Return the relevant contact list as a json named contacts
+    return jsonify({'patients': patientsArray})
+
 # Generate X days from today list of days with key pair of timedate and Hebrew day:
 def generate_days_list():
     from_date = datetime.datetime.today()
@@ -81,7 +94,7 @@ def get_available_slots(stamp):
     return avail_slots
 
 ## Related to create the actual event after we have patient, contact and full timestamp
-# Step 1 - Create New event
+# Step 1.0 - Create New event
 # Step 1.1 - Generate Google Calendar new event
 # Step 1.2 - Add new Event record to db
 # Step 1.3 - TBD, add new event to crond job
@@ -121,7 +134,7 @@ def add_event_to_db(event, patient_id, contact_id):
     print("Event added to db successfully!")
     return True
 
-# Main function, get the minimal 3 parameters and generate new Event (Steps 1)
+# Main function, get the minimal 3 parameters and generate new Event (Steps 1.0)
 def create_new_event(start, patient_id, contact_id):
     # Create a Google calendar event
     # should also take the p name and c name to do a beautiful title
@@ -142,26 +155,26 @@ def create_new_event(start, patient_id, contact_id):
     print("Im done!!! ")
 
 
+#### Delete Event Related Functions ####
+# Step 2.0 - Delete event flow
+# Step 2.1 - Delete Event from Google Calendar
+# Step 2.2 - UPdate Event in DB to status 2
+# Step 2.3 - TBD, delete event task from crond
 
-
-if __name__ == '__main__':
-    get_available_slots("2022-09-18")
-
-# Delete Event Related Functions
-
+# Get Event ID and update record in DB to status 2 (Step 2.2)
 def set_event_as_deleted(event_id):
     stmt = update(Event).where(Event.event_id == event_id).values(status='2')
     engine.execute(stmt)
     print("Event marked as deleted (status = 2) in Event table")
 
-
+# Get Event ID and delete event from Google Calendar (Step 2.1)
 def delete_calendar_event(event_id):
     gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
     event_to_be_deleted = gc.get_event(event_id)
     gc.delete_event(event_to_be_deleted)
     print("Event deleted from calendar successfully")
 
-
+# Get Event ID from UI and run delete flow (Step 2.0)
 def delete_event_func(event_id):
     # Get event from Google Calendar and delete it:
     delete_calendar_event(event_id)

@@ -28,7 +28,7 @@ from apps.events.forms import EventForm, AddNewEventForm
 # engine = create_engine(e)
 # session = Session(engine)
 from apps.events.functions import generate_days_list, replace_num_with_hebrew_day, get_available_slots, \
-    get_relevant_contacts, create_new_event
+    get_relevant_contacts, create_new_event, generate_patiens_json
 
 
 @blueprint.route('/calendar', methods=['GET', 'POST'])
@@ -36,16 +36,14 @@ from apps.events.functions import generate_days_list, replace_num_with_hebrew_da
 def calendar():
     eventForm = EventForm()
     add_new_event_form = AddNewEventForm()
-    # Should be external functions
-    patients = Patient.query.all()
-    patient_ids_list = []
-    for p in patients:
-        patient_ids_list.append(p.patient_id)
-
-    add_new_event_form.patient.choices = patient_ids_list
-    # add_new_event_form.day.choices = generate_days_list()
     gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
     return render_template('events/calendar.html', gc=gc, eventForm=eventForm, add_new_event_form=add_new_event_form)
+
+@blueprint.route("/events/patients_list")
+@login_required
+def generate_json_patients():
+    p_json = generate_patiens_json()
+    return p_json
 
 
 @blueprint.route("/add_new_event", methods=['GET', 'POST'])
@@ -53,19 +51,7 @@ def calendar():
 def add_new_event_popup():
     add_new_event_form = AddNewEventForm()
 
-    # If request.method == 'POST' update patient information
-    # if request.method == 'POST':
-    #     p = Patient(
-    #         patient_id=form.patient_id.data,
-    #         f_name=form.f_name.data,
-    #         l_name=form.l_name.data,
-    #         bed=form.bed.data,
-    #         department=current_user.id,
-    #         max_calls=form.max_calls.data
-    #     )
-    #     db.session.add(p)
-    #     db.session.commit()
-
+    # Get form from UI and add new event
     if request.method == 'POST':
         timestamp = add_new_event_form.data['day'] + ' ' + add_new_event_form.data['time']
         time_format = '%Y-%m-%d %H:%M'
@@ -73,14 +59,9 @@ def add_new_event_popup():
         create_new_event(patient_id=add_new_event_form.data['patient'], contact_id=add_new_event_form.data['contact'], start=day_chosen)
         return redirect(url_for('events_blueprint.calendar'))
 
-    # extract relevant params
-    # create the new account
-    # redirect to calendar url to refresh the page!
+    # Generate the New Event Form:
     if request.method == 'Get':
-        # add_new_event_form.patient_list.choices = Patient.query.all()
         return redirect(url_for('events_blueprint.calendar', add_new_event_form=add_new_event_form))
-        # return redirect(url_for('patients_blueprint.patient_info', patient_id=p.patient_id))
-        # flash("מטופל {} עודכן בהצלחה".format(p.f_name))
 
     return render_template('events/calendar.html', add_new_event_form=add_new_event_form)
 
