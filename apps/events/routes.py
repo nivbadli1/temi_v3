@@ -28,7 +28,7 @@ from apps.events.forms import EventForm, AddNewEventForm
 # engine = create_engine(e)
 # session = Session(engine)
 from apps.events.functions import generate_days_list, replace_num_with_hebrew_day, get_available_slots, \
-    get_relevant_contacts
+    get_relevant_contacts, create_new_event
 
 
 @blueprint.route('/calendar', methods=['GET', 'POST'])
@@ -66,11 +66,16 @@ def add_new_event_popup():
     #     db.session.add(p)
     #     db.session.commit()
 
-    # if request.method == 'Post':
+    if request.method == 'POST':
+        timestamp = add_new_event_form.data['day'] + ' ' + add_new_event_form.data['time']
+        time_format = '%Y-%m-%d %H:%M'
+        day_chosen = datetime.datetime.strptime(timestamp, time_format)
+        create_new_event(patient_id=add_new_event_form.data['patient'], contact_id=add_new_event_form.data['contact'], start=day_chosen)
+        return redirect(url_for('events_blueprint.calendar'))
+
     # extract relevant params
     # create the new account
     # redirect to calendar url to refresh the page!
-
     if request.method == 'Get':
         # add_new_event_form.patient_list.choices = Patient.query.all()
         return redirect(url_for('events_blueprint.calendar', add_new_event_form=add_new_event_form))

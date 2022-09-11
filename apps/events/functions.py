@@ -12,6 +12,8 @@ from gcsa.google_calendar import GoogleCalendar
 from sqlalchemy.sql.expression import update
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+
+from apps.events.functs import generate_json
 from apps.patients.utils import get_days_list
 
 
@@ -35,6 +37,8 @@ def replace_num_with_hebrew_day(day):
     })
     return d[day]
 
+#### Create New Event Related Functions ####
+## Form UI Generator ##
 # Generate X days from today list of days with key pair of timedate and Hebrew day:
 def generate_days_list():
     from_date = datetime.datetime.today()
@@ -49,6 +53,7 @@ def generate_days_list():
 
     return jsonify({'weekdays': following_week})
 
+# Get patient ID, return a json of contacts with ID and f_name
 def get_relevant_contacts(patient_id):
     contacts = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(
         patient_id=patient_id)
@@ -61,6 +66,7 @@ def get_relevant_contacts(patient_id):
     # Return the relevant contact list as a json named contacts
     return jsonify({'contacts': contactArray})
 
+# Get a Date format YYYY-MM-DD and return the available days from 8 to 17
 def get_available_slots(stamp):
     start_time = stamp + ' 08:00'
     time_format = '%Y-%m-%d %H:%M'
@@ -73,6 +79,69 @@ def get_available_slots(stamp):
         slot = slot + datetime.timedelta(minutes=20)
 
     return avail_slots
+
+## Related to create the actual event after we have patient, contact and full timestamp
+# Step 1 - Create New event
+# Step 1.1 - Generate Google Calendar new event
+# Step 1.2 - Add new Event record to db
+# Step 1.3 - TBD, add new event to crond job
+
+# Generate new Google Calendar Event (Step 1.1)
+def add_new_google_calendar_event(start_time, patient_name, contact_name):
+    gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
+    event_template = generate_json()
+    # Format the Template JSON
+    new_start_time = start_time.isoformat() + "+03:00"
+    event_template['start']['dateTime'] = new_start_time
+    new_end_time = start_time + datetime.timedelta(minutes=20)
+    new_end_time = new_end_time.isoformat() + "+03:00"
+    event_template['end']['dateTime'] = new_end_time
+
+    event_template['summary'] = "פגישה בין " + patient_name + " ל" + contact_name
+
+    print("event template new details are:", event_template)
+
+    # Create a real Calendar event using the gc service
+    event = gc.service.events().insert(calendarId='primary', body=event_template, conferenceDataVersion=1).execute()
+
+    # gc.service.events().insert(calendarId='primary', body=event, conferenceDataVersion=1).execute()
+    print("Event is: ", type(event))
+    print('Event created successfully: %s' % event)
+
+    return event
+
+
+# Add new event record to DB (Step 1.2)
+def add_event_to_db(event, patient_id, contact_id):
+    print("Adding event...")
+    db_event = Event(url=event['hangoutLink'], event_id=event['id'], start_time=event['start']['dateTime'].split()[0],
+                     status=0, patient_id=patient_id, contact_id=contact_id)
+    session.add(db_event)
+    session.commit()
+    print("Event added to db successfully!")
+    return True
+
+# Main function, get the minimal 3 parameters and generate new Event (Steps 1)
+def create_new_event(start, patient_id, contact_id):
+    # Create a Google calendar event
+    # should also take the p name and c name to do a beautiful title
+    contact_name = session.query(Contact.f_name).filter(Contact.contact_id == contact_id).first()[0]
+    patient_name = session.query(Patient.f_name).filter(Patient.patient_id == patient_id).first()[0]
+    print("P: {} {}, C: {} {}", patient_name, patient_id, contact_name, contact_id)
+    event = add_new_google_calendar_event(start, patient_name, contact_name)
+
+    # Add new event ID to our database event table
+    add_event_to_db(event, patient_id, contact_id)
+
+    # Add new event job in crony
+    # Need to get the robot locations and translate patient bed to robot location.
+    # patient_bed = session.query(Patient.bed).filter(patient_id == patient_id).first()[0]
+    # Translate Bed to Robot Location:
+    # Add crony task:
+
+    print("Im done!!! ")
+
+
 
 
 if __name__ == '__main__':
