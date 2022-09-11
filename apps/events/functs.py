@@ -394,16 +394,18 @@ if __name__ == '__main__':
     print("~~~ Let main run ~~~")
     # tests()
     # delete_event("s9rs89unbqq83otib2etqg2clk")
-    # gc = GoogleCalendar(credentials_path='./credentials.json')
-    # for event in gc:
-    #     print(EventSerializer.to_json(event))
+    gc = GoogleCalendar(credentials_path='./credentials.json')
+    for event in gc:
+        print(EventSerializer.to_json(event))
     # # Format: Year Month Day Hour Minute Second
     # # Add new event example:
     # start = datetime.datetime(2022, 9, 23, 11, 0, 0)
     # patient_id = 12
     # contact_id = 13
     # create_new_event(start, patient_id, contact_id)
+
     generateSomeEvents()
+
     # add_new_google_calendar_event(start)
 
     # tz_string = datetime.datetime.now().astimezone().tzname()
@@ -446,3 +448,15 @@ if __name__ == '__main__':
 #         # return redirect(url_for('patients_blueprint.patient_info', patient_id=p.patient_id))
 #         # flash("מטופל {} עודכן בהצלחה".format(p.f_name))
 #     return render_template('patients/add_patient.html', form=form)
+
+    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id)
+    # Show all contacts in form:
+    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id)
+    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(patient_id=2)
+
+    # Experiments:
+    # patients_choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name)
+    # patients_choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name)
+    # add_new_event_form.contact.choices = [Contact.query.filter_by(patient_id=2)]
+
+

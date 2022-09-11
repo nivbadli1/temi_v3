@@ -1,5 +1,7 @@
 # Modules Imports:
-from flask import app
+import datetime
+
+from flask import app, jsonify
 
 from apps.authentication.models import Event, Patient
 
@@ -10,13 +12,50 @@ from gcsa.google_calendar import GoogleCalendar
 from sqlalchemy.sql.expression import update
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+from apps.patients.utils import get_days_list
 
 
 #  Global Configuration For Class:
 e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
 engine = create_engine(e)
 session = Session(engine)
+DAYS_TO_SHOW_IN_EVENTS = 7
 
+# Add New Event Related Functions
+# Utils:
+def replace_num_with_hebrew_day(day):
+    d = dict({
+        6: "ראשון",
+        0: "שני",
+        1: "שלישי",
+        2: "רביעי",
+        3: "חמישי",
+        4: "שישי",
+        5: "שבת",
+    })
+    return d[day]
+
+# Generate X days from today list of days with key pair of timedate and Hebrew day:
+def generate_days_list():
+    from_date = datetime.datetime.today()
+    today = from_date.date()
+    following_week = []
+
+    for i in range(DAYS_TO_SHOW_IN_EVENTS):
+        new_date = today + datetime.timedelta(days=1+i)
+        print(new_date.isoformat(), replace_num_with_hebrew_day(new_date.weekday()))
+        dayObj = {'date': new_date.isoformat(), 'hebrew_day': replace_num_with_hebrew_day(new_date.weekday())}
+        following_week.append(dayObj)
+
+    return jsonify({'weekdays': following_week})
+
+
+
+if __name__ == '__main__':
+    generate_days_list()
+
+
+# Delete Event Related Functions
 
 def set_event_as_deleted(event_id):
     stmt = update(Event).where(Event.event_id == event_id).values(status='2')

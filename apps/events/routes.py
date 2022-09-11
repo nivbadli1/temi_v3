@@ -6,6 +6,8 @@ Copyright (c) 2019 - present AppSeed.us
 from flask import render_template, redirect, request, url_for, session, flash, jsonify
 from flask_login import login_required
 
+import datetime
+
 # GCSA
 from gcsa.google_calendar import GoogleCalendar
 from gcsa.event import Event as GoogleEvent
@@ -22,10 +24,10 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from apps.events import functions
 from apps.events.forms import EventForm, AddNewEventForm
 
-
 # e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
 # engine = create_engine(e)
 # session = Session(engine)
+from apps.events.functions import generate_days_list, replace_num_with_hebrew_day
 
 
 @blueprint.route('/calendar', methods=['GET', 'POST'])
@@ -40,16 +42,7 @@ def calendar():
         patient_ids_list.append(p.patient_id)
 
     add_new_event_form.patient.choices = patient_ids_list
-    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id)
-    # Show all contacts in form:
-    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id)
-    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(patient_id=2)
-
-    # Experiments:
-    # patients_choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name)
-    # patients_choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name)
-    # add_new_event_form.contact.choices = [Contact.query.filter_by(patient_id=2)]
-
+    # add_new_event_form.day.choices = generate_days_list()
     gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
     return render_template('events/calendar.html', gc=gc, eventForm=eventForm, add_new_event_form=add_new_event_form)
 
@@ -71,6 +64,12 @@ def add_new_event_popup():
     #     )
     #     db.session.add(p)
     #     db.session.commit()
+
+    # if request.method == 'Post':
+    # extract relevant params
+    # create the new account
+    # redirect to calendar url to refresh the page!
+
     if request.method == 'Get':
         # add_new_event_form.patient_list.choices = Patient.query.all()
         return redirect(url_for('events_blueprint.calendar', add_new_event_form=add_new_event_form))
@@ -102,7 +101,8 @@ def delete_event():
 @blueprint.route('/events/<patient_id>')
 @login_required
 def all_contacts(patient_id):
-    contacts = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(patient_id=patient_id)
+    contacts = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(
+        patient_id=patient_id)
     contactArray = []
 
     for contact in contacts:
@@ -111,6 +111,22 @@ def all_contacts(patient_id):
 
     # Return the relevant contact list as a json named contacts
     return jsonify({'contacts': contactArray})
+
+
+@blueprint.route('/events/days_list')
+@login_required
+def get_weekdays_list():
+    from_date = datetime.datetime.today()
+    today = from_date.date()
+    following_week = []
+
+    for i in range(7):
+        new_date = today + datetime.timedelta(days=1+i)
+        print(new_date.isoformat(), replace_num_with_hebrew_day(new_date.weekday()))
+        dayObj = {'date': new_date.isoformat(), 'hebrew_day': replace_num_with_hebrew_day(new_date.weekday())}
+        following_week.append(dayObj)
+
+    return jsonify({'weekdays': following_week})
 
 # def get_segment(request):
 #     try:

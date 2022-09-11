@@ -41,7 +41,7 @@
                     </div>
 
                     <div>
-                        <button type="button" class="btn btn-success float-right"
+                        <button type="button" class="btn btn-success float-right" onclick="load_days();"
                                 data-toggle="modal" data-target="#add_new_event_modal">אירוע חדש דנדש
                         </button>
                     </div>
@@ -162,7 +162,7 @@
 
                         <div class="form-group">
                             {{ add_new_event_form.day.label(class="form-control-label") }}
-                            {{ add_new_event_form.day(class="form-control") }}
+                            {{ add_new_event_form.day(class="form-control", id="days_select_form") }}
                         </div>
                         <div class="form-group">
                             <button class="btn btn-primary" type="submit">הוספת שיחת וידאו חדשה</button>
@@ -204,7 +204,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <input class="btn btn-warning" type="submit" form="" value="עריכת אירוע">
+<!--                    <input class="btn btn-warning" type="submit" form="" value="עריכת אירוע">-->
                     <input class="btn btn-danger" type="submit" form="delete_this_event" value="מחק אירוע">
                     <button type="button" class="btn btn-secondary" onclick="closemodal();">סגירה</button>
                 </div>
@@ -240,7 +240,6 @@ function closemodal() {
 
     fetch('/events/' +  value).then(function(response) {
         response.json().then(function(data) {
-<!-- Data is the response of the event function, its just return a list of contact in a json format later to use        -->
            console.table(data);
            let optionHTML = '';
            for (let contact of data.contacts) {
@@ -251,8 +250,28 @@ function closemodal() {
     });
 };
 
+</script>
+
+<script>
+    var patient_select = document.getElementById("patient_select_form");
+    var days_select = document.getElementById("days_select_form");
+
+    function load_days() {
+    fetch('/events/days_list').then(function(response) {
+        response.json().then(function(data) {
+           console.table(data);
+           let optionHTML_days = '';
+           for (let day of data.weekdays) {
+                    optionHTML_days += '<option value="' + day.date + '">' + day.hebrew_day + ' ' + day.date + '</option>';
+                }
+           days_select.innerHTML = optionHTML_days;
+        });
+    });
+};
+
 
 </script>
+
 
 
 <!-- jQuery -->
