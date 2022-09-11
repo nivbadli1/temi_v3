@@ -22,6 +22,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from apps.events import functions
 from apps.events.forms import EventForm, AddNewEventForm
 
+
 # e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
 # engine = create_engine(e)
 # session = Session(engine)
@@ -32,9 +33,23 @@ from apps.events.forms import EventForm, AddNewEventForm
 def calendar():
     eventForm = EventForm()
     add_new_event_form = AddNewEventForm()
+    # Should be external functions
+    patients = Patient.query.all()
+    patient_ids_list = []
+    for p in patients:
+        patient_ids_list.append(p.patient_id)
 
-    add_new_event_form.patient_list.choices = Patient.query.with_entities(Patient.patient_id, Patient.f_name)
-    add_new_event_form.contact_list.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name)
+    add_new_event_form.patient.choices = patient_ids_list
+    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id)
+    # Show all contacts in form:
+    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id)
+    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(patient_id=2)
+
+    # Experiments:
+    # patients_choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name)
+    # patients_choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name)
+    # add_new_event_form.contact.choices = [Contact.query.filter_by(patient_id=2)]
+
     gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
     return render_template('events/calendar.html', gc=gc, eventForm=eventForm, add_new_event_form=add_new_event_form)
 
@@ -65,9 +80,6 @@ def add_new_event_popup():
     return render_template('events/calendar.html', add_new_event_form=add_new_event_form)
 
 
-
-
-
 @blueprint.route('/delete_event', methods=['GET', 'POST'])
 @login_required
 def delete_event():
@@ -85,6 +97,20 @@ def delete_event():
             flash("Invalid type for variable")
 
     return redirect(url_for('events_blueprint.calendar'))
+
+
+@blueprint.route('/events/<patient_id>')
+@login_required
+def all_contacts(patient_id):
+    contacts = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(patient_id=patient_id)
+    contactArray = []
+
+    for contact in contacts:
+        contactObj = {'id': contact.contact_id, 'f_name': contact.f_name}
+        contactArray.append(contactObj)
+
+    # Return the relevant contact list as a json named contacts
+    return jsonify({'contacts': contactArray})
 
 # def get_segment(request):
 #     try:

@@ -150,13 +150,13 @@
                     <form method="POST"
                           action="{{ url_for('events_blueprint.add_new_event_popup') }}">
                         <div class="form-group">
-                            {{ add_new_event_form.patient_list.label(class="form-control-label") }}
-                            {{ add_new_event_form.patient_list(class="form-control") }}
+                            {{ add_new_event_form.patient.label(class="form-control-label") }}
+                            {{ add_new_event_form.patient(class="form-control", id="patient_select_form") }}
                         </div>
 
                         <div class="form-group">
-                            {{ add_new_event_form.contact_list.label(class="form-control-label") }}
-                            {{ add_new_event_form.contact_list(class="form-control") }}
+                            {{ add_new_event_form.contact.label(class="form-control-label") }}
+                            {{ add_new_event_form.contact(class="form-control", id="contact_select_form") }}
                         </div>
 
 
@@ -225,11 +225,35 @@
 
 function closemodal() {
       $('#add_new_contact_modal').modal('hide');
+      alert("is it working")
+};
+
+</script>
+
+<script>
+    var patient_select = document.getElementById("patient_select_form");
+    var contact_select = document.getElementById("contact_select_form");
+
+
+    patient_select.onchange = function() {
+    var value = patient_select.options[patient_select.selectedIndex].value;
+
+    fetch('/events/' +  value).then(function(response) {
+        response.json().then(function(data) {
+<!-- Data is the response of the event function, its just return a list of contact in a json format later to use        -->
+           console.table(data);
+           let optionHTML = '';
+           for (let contact of data.contacts) {
+                    optionHTML += '<option value="' + contact.id + '">' + contact.f_name +  '</option>';
+                }
+           contact_select.innerHTML = optionHTML;
+        });
+    });
 };
 
 
-
 </script>
+
 
 <!-- jQuery -->
 <script src="/static/assets/plugins/jquery/jquery.min.js"></script>
