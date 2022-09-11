@@ -16,3 +16,13 @@
     text-align: right;
  }
 
+.add-event{
+    display: block;
+    width: 10%;
+    float:right;
+}
+
+.righte{
+    display: block;
+    float:right;
+}

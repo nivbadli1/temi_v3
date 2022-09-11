@@ -415,3 +415,34 @@ if __name__ == '__main__':
     # Print all events from Calendar:
 
     print("Done")
+
+# Examples:
+
+# add_new_event_form.patient_list.choices = Patient.query.all()
+# 2022-09-03 22:42:06
+
+
+
+# @blueprint.route("/add_new_event", methods=['GET', 'POST'])
+# @login_required
+# def add_new_event():
+#     form = AddNewEventForm()
+#     # # Get all attributes of the patient
+#     # p = Patient.query.filter_by(patient_id=patient_id).first_or_404()
+#
+#     # If request.method == 'POST' update patient information
+#     if request.method == 'POST':
+#         p = Patient(
+#             patient_id=form.patient_id.data,
+#             f_name=form.f_name.data,
+#             l_name=form.l_name.data,
+#             bed=form.bed.data,
+#             department=current_user.id,
+#             max_calls=form.max_calls.data
+#         )
+#         db.session.add(p)
+#         db.session.commit()
+#         return redirect(url_for('patients_blueprint.patient_info',patient_id = form.patient_id.data))
+#         # return redirect(url_for('patients_blueprint.patient_info', patient_id=p.patient_id))
+#         # flash("מטופל {} עודכן בהצלחה".format(p.f_name))
+#     return render_template('patients/add_patient.html', form=form)

@@ -1,5 +1,7 @@
 # Modules Imports:
-from apps.authentication.models import Event
+from flask import app
+
+from apps.authentication.models import Event, Patient
 
 #  Google Calendar Imports:
 
@@ -39,8 +41,6 @@ def delete_event_func(event_id):
     # Delete task from chrony
 
     print("Event deleted from whole system successfully")
-
-
 
 
 
