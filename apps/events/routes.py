@@ -27,7 +27,8 @@ from apps.events.forms import EventForm, AddNewEventForm
 # e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
 # engine = create_engine(e)
 # session = Session(engine)
-from apps.events.functions import generate_days_list, replace_num_with_hebrew_day
+from apps.events.functions import generate_days_list, replace_num_with_hebrew_day, get_available_slots, \
+    get_relevant_contacts
 
 
 @blueprint.route('/calendar', methods=['GET', 'POST'])
@@ -101,16 +102,14 @@ def delete_event():
 @blueprint.route('/events/<patient_id>')
 @login_required
 def all_contacts(patient_id):
-    contacts = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(
-        patient_id=patient_id)
-    contactArray = []
+    contact_json = get_relevant_contacts(patient_id)
+    return contact_json
 
-    for contact in contacts:
-        contactObj = {'id': contact.contact_id, 'f_name': contact.f_name}
-        contactArray.append(contactObj)
-
-    # Return the relevant contact list as a json named contacts
-    return jsonify({'contacts': contactArray})
+@blueprint.route('/events/generate_events_slots/<event_date>')
+@login_required
+def generate_available_events_slot(event_date):
+    slots_list = get_available_slots(event_date)
+    return jsonify({'slots': slots_list})
 
 
 @blueprint.route('/events/days_list')

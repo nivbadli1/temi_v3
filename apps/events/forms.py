@@ -21,6 +21,7 @@ class AddNewEventForm(FlaskForm):
     patient = SelectField('מטופל', choices=[], validators=[DataRequired()])
     contact = SelectField('איש קשר', choices=[], validators=[DataRequired()])
     day = SelectField('יום', choices=[], validators=[DataRequired()])
+    time = SelectField('שעה', choices=[], validators=[DataRequired()])
 #     event_hour_start = SelectField('משעה', choices=get_hour_list(), validators=[DataRequired()])
 
 

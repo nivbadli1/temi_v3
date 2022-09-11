@@ -3,7 +3,7 @@ import datetime
 
 from flask import app, jsonify
 
-from apps.authentication.models import Event, Patient
+from apps.authentication.models import Event, Patient, Contact
 
 #  Google Calendar Imports:
 
@@ -49,11 +49,34 @@ def generate_days_list():
 
     return jsonify({'weekdays': following_week})
 
+def get_relevant_contacts(patient_id):
+    contacts = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(
+        patient_id=patient_id)
+    contactArray = []
+
+    for contact in contacts:
+        contactObj = {'id': contact.contact_id, 'f_name': contact.f_name}
+        contactArray.append(contactObj)
+
+    # Return the relevant contact list as a json named contacts
+    return jsonify({'contacts': contactArray})
+
+def get_available_slots(stamp):
+    start_time = stamp + ' 08:00'
+    time_format = '%Y-%m-%d %H:%M'
+    day_chosen = datetime.datetime.strptime(start_time, time_format)
+    avail_slots = []
+    slot = day_chosen
+    # Generate a list of dictionaries with each free DF slot:
+    while slot.hour <= 17:
+        avail_slots.append(slot.strftime("%H:%M"))
+        slot = slot + datetime.timedelta(minutes=20)
+
+    return avail_slots
 
 
 if __name__ == '__main__':
-    generate_days_list()
-
+    get_available_slots("2022-09-18")
 
 # Delete Event Related Functions
 

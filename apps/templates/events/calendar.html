@@ -164,6 +164,13 @@
                             {{ add_new_event_form.day.label(class="form-control-label") }}
                             {{ add_new_event_form.day(class="form-control", id="days_select_form") }}
                         </div>
+
+                        <div class="form-group">
+                            {{ add_new_event_form.time.label(class="form-control-label") }}
+                            {{ add_new_event_form.time(class="form-control", id="times_select_form") }}
+                        </div>
+
+
                         <div class="form-group">
                             <button class="btn btn-primary" type="submit">הוספת שיחת וידאו חדשה</button>
                         </div>
@@ -255,6 +262,8 @@ function closemodal() {
 <script>
     var patient_select = document.getElementById("patient_select_form");
     var days_select = document.getElementById("days_select_form");
+    var times_select = document.getElementById("times_select_form");
+
 
     function load_days() {
     fetch('/events/days_list').then(function(response) {
@@ -268,6 +277,23 @@ function closemodal() {
         });
     });
 };
+
+    days_select.onchange = function() {
+    var day_chosen = days_select.options[days_select.selectedIndex].value;
+
+    fetch('/events/generate_events_slots/' +  day_chosen).then(function(response) {
+        response.json().then(function(data) {
+           console.table(data);
+           let optionHTML_slots = '';
+           for (let slot of data.slots) {
+                    optionHTML_slots += '<option value="' + slot + '">' + slot + '</option>';
+                }
+           times_select.innerHTML = optionHTML_slots;
+        });
+    });
+};
+
+
 
 
 </script>
