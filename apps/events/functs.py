@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import datetime
 
+import crontab
 import pytz
 from gcsa.serializers.event_serializer import EventSerializer
 
@@ -14,6 +15,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 from collections import defaultdict
 
+from crontab import CronTab
+
 # import google.api.services.calendar.Calendar
 # import google.api.services.calendar.model.Event
 # import google.api.services.calendar.model.Events
@@ -22,7 +25,6 @@ from gcsa.event import Event as GoogleEvent
 # from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.sql.expression import update
-
 
 import os.path
 
@@ -372,6 +374,7 @@ def tests():
     # temp_json = generate_json_test()
     # add_event_to_db(temp_json, 7, 29)
 
+
 def generateSomeEvents():
     start = datetime.datetime(2022, 9, 23, 11, 0, 0)
     patient_id = 12
@@ -389,49 +392,37 @@ def generateSomeEvents():
     create_new_event(start, patient_id, contact_id)
 
 
-# Get a Date format YYYY-MM-DD and return the available days from 8 to 17
-def get_available_slots(day):
-    avail_slots = []
-    slot = day
-    # Generate a list of dictionaries with each free DF slot:
-    while slot.hour <= 17:
-        avail_slots.append(slot.strftime("%H:%M"))
-        slot = slot + datetime.timedelta(minutes=20)
+def schadule_new_job(dt, event_id):
+    dt = dt.replace(second=0, microsecond=0)
+    my_cron = CronTab(user=True)
+    job = my_cron.new(command='echo hello_world_func', comment=event_id)
+    job.minute.on(dt.minute)
+    job.hour.on(dt.hour)
+    job.day.on(dt.day)
+    job.month.on(dt.month)
+    my_cron.write()
 
-    return avail_slots
+
+def delete_job(job_id):
+    cron = CronTab(user=True)
+    cron.remove_all(comment=job_id)
+    cron.write()
 
 
-def remove_occupied_slots(slots_list, day):
-    # 1. Create a set of the same day events
-    gc = GoogleCalendar(credentials_path='credentials.json')
-    today_events_timestamps = []
-    for event in gc.get_events(day, day + datetime.timedelta(days=1)):
-        today_events_timestamps.append(event.start.strftime("%H:%M"))
-        # print("Event: ", event.event_id, event.summary, event.start, " Added to our list ")
-
-    print("Current event list: ", today_events_timestamps)
-
-    # 2. Substract the today_events_timestamps from the slots_list:
-    return list(set(slots_list) - set(today_events_timestamps))
-
-def stamp_to_datetime(stamp):
-    start_time = stamp + ' 08:00'
-    time_format = '%Y-%m-%d %H:%M'
-    day = datetime.datetime.strptime(start_time, time_format)
-    return day
+# def create_new_crond(location, time, uri):
 
 
 if __name__ == '__main__':
     print("~~~ Let main run ~~~")
-    fake_list = ['09:40', '10:00', '10:20', '10:40', '11:00', '11:20']
-    date = "2022-09-18"
-    new_date = stamp_to_datetime(date)
-    # slots = get_available_slots(new_date)
-    print(fake_list)
-    small_list = remove_occupied_slots(new_date)
-    a_b = list(set(fake_list) - set(small_list))
-    print("The new set is: ", a_b)
-
+    event_id = "sd$21G63"
+    location = "BED_10"
+    time = "2020-09-20T11:00"
+    time_format = '%Y-%m-%d %H:%M'
+    time = datetime.datetime.strptime(time, time_format)
+    uri = "www.temiprojact.cos.emec"
+    # create_new_crond(location, time, uri)
+    schadule_new_job(time, event_id)
+    # delete_job(event_id)
     # tests()
     # delete_event("s9rs89unbqq83otib2etqg2clk")
     # gc = GoogleCalendar(credentials_path='./credentials.json')
@@ -464,7 +455,6 @@ if __name__ == '__main__':
 # 2022-09-03 22:42:06
 
 
-
 # @blueprint.route("/add_new_event", methods=['GET', 'POST'])
 # @login_required
 # def add_new_event():
@@ -489,14 +479,12 @@ if __name__ == '__main__':
 #         # flash("מטופל {} עודכן בהצלחה".format(p.f_name))
 #     return render_template('patients/add_patient.html', form=form)
 
-    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id)
-    # Show all contacts in form:
-    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id)
-    # add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(patient_id=2)
+# add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id)
+# Show all contacts in form:
+# add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id)
+# add_new_event_form.contact.choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(patient_id=2)
 
-    # Experiments:
-    # patients_choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name)
-    # patients_choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name)
-    # add_new_event_form.contact.choices = [Contact.query.filter_by(patient_id=2)]
-
-
+# Experiments:
+# patients_choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name)
+# patients_choices = Contact.query.with_entities(Contact.contact_id, Contact.f_name)
+# add_new_event_form.contact.choices = [Contact.query.filter_by(patient_id=2)]

@@ -1,6 +1,7 @@
 # Modules Imports:
 import datetime
 
+from crontab import CronTab
 from flask import app, jsonify
 
 from apps.authentication.models import Event, Patient, Contact
@@ -102,6 +103,7 @@ def get_available_slots(day):
     return avail_slots
 
 
+# Get a full slots list and remove occupied slots, return a list
 def remove_occupied_slots(slots_list, day):
     # Create a set of the same day events
     gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
@@ -155,6 +157,16 @@ def add_event_to_db(event, patient_id, contact_id):
     return True
 
 
+def create_new_crond(location, time, uri, event_id):
+    time = time.replace(second=0, microsecond=0)
+    my_cron = CronTab(user=True)
+    job = my_cron.new(command='echo hello_world_func', comment=event_id)
+    job.minute.on(time.minute)
+    job.hour.on(time.hour)
+    job.day.on(time.day)
+    job.month.on(time.month)
+    my_cron.write()
+
 # Main function, get the minimal 3 parameters and generate new Event (Steps 1.0)
 def create_new_event(start, patient_id, contact_id):
     # Create a Google calendar event
@@ -171,15 +183,23 @@ def create_new_event(start, patient_id, contact_id):
     # Need to get the robot locations and translate patient bed to robot location.
     # patient_bed = session.query(Patient.bed).filter(patient_id == patient_id).first()[0]
     # Translate Bed to Robot Location:
+
+    # event.url
+    # start.isoformat
+    location = "BED_12"
     # Add crony task:
+    create_new_crond(location, start, event['hangoutLink'], event['id'])
 
     print("Im done!!! ")
+
+
+
 
 
 #### Delete Event Related Functions ####
 # Step 2.0 - Delete event flow
 # Step 2.1 - Delete Event from Google Calendar
-# Step 2.2 - UPdate Event in DB to status 2
+# Step 2.2 - Update Event in DB to status 2
 # Step 2.3 - TBD, delete event task from crond
 
 # Get Event ID and update record in DB to status 2 (Step 2.2)
@@ -197,6 +217,12 @@ def delete_calendar_event(event_id):
     print("Event deleted from calendar successfully")
 
 
+def delete_job(event_id):
+    cron = CronTab(user=True)
+    cron.remove_all(comment=event_id)
+    cron.write()
+
+
 # Get Event ID from UI and run delete flow (Step 2.0)
 def delete_event_func(event_id):
     # Get event from Google Calendar and delete it:
@@ -206,5 +232,6 @@ def delete_event_func(event_id):
     set_event_as_deleted(event_id)
 
     # Delete task from chrony
+    delete_job(event_id)
 
     print("Event deleted from whole system successfully")
