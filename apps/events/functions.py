@@ -16,12 +16,12 @@ from sqlalchemy.orm import Session
 from apps.events.functs import generate_json
 from apps.patients.utils import get_days_list
 
-
 #  Global Configuration For Class:
 e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
 engine = create_engine(e)
 session = Session(engine)
 DAYS_TO_SHOW_IN_EVENTS = 7
+
 
 # Add New Event Related Functions
 # Utils:
@@ -36,6 +36,7 @@ def replace_num_with_hebrew_day(day):
         5: "שבת",
     })
     return d[day]
+
 
 #### Create New Event Related Functions ####
 ## Form UI Generator ##
@@ -52,6 +53,7 @@ def generate_patiens_json():
     # Return the relevant contact list as a json named contacts
     return jsonify({'patients': patientsArray})
 
+
 # Generate X days from today list of days with key pair of timedate and Hebrew day:
 def generate_days_list():
     from_date = datetime.datetime.today()
@@ -59,12 +61,13 @@ def generate_days_list():
     following_week = []
 
     for i in range(DAYS_TO_SHOW_IN_EVENTS):
-        new_date = today + datetime.timedelta(days=1+i)
+        new_date = today + datetime.timedelta(days=1 + i)
         print(new_date.isoformat(), replace_num_with_hebrew_day(new_date.weekday()))
         dayObj = {'date': new_date.isoformat(), 'hebrew_day': replace_num_with_hebrew_day(new_date.weekday())}
         following_week.append(dayObj)
 
     return jsonify({'weekdays': following_week})
+
 
 # Get patient ID, return a json of contacts with ID and f_name
 def get_relevant_contacts(patient_id):
@@ -79,19 +82,36 @@ def get_relevant_contacts(patient_id):
     # Return the relevant contact list as a json named contacts
     return jsonify({'contacts': contactArray})
 
-# Get a Date format YYYY-MM-DD and return the available days from 8 to 17
-def get_available_slots(stamp):
+
+# Get Date timestamp and and return TimeDate
+def stamp_to_datetime(stamp):
     start_time = stamp + ' 08:00'
     time_format = '%Y-%m-%d %H:%M'
-    day_chosen = datetime.datetime.strptime(start_time, time_format)
+    day = datetime.datetime.strptime(start_time, time_format)
+    return day
+
+
+# Get a Date format YYYY-MM-DD and return the available days from 8 to 17
+def get_available_slots(day):
     avail_slots = []
-    slot = day_chosen
+    slot = day
     # Generate a list of dictionaries with each free DF slot:
     while slot.hour <= 17:
         avail_slots.append(slot.strftime("%H:%M"))
         slot = slot + datetime.timedelta(minutes=20)
-
     return avail_slots
+
+
+def remove_occupied_slots(slots_list, day):
+    # Create a set of the same day events
+    gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
+    today_events_timestamps = []
+    for event in gc.get_events(day, day + datetime.timedelta(days=1)):
+        today_events_timestamps.append(event.start.strftime("%H:%M"))
+
+    # Subtract the today_events_timestamps from the slots_list:
+    return sorted(list(set(slots_list) - set(today_events_timestamps)))
+
 
 ## Related to create the actual event after we have patient, contact and full timestamp
 # Step 1.0 - Create New event
@@ -134,6 +154,7 @@ def add_event_to_db(event, patient_id, contact_id):
     print("Event added to db successfully!")
     return True
 
+
 # Main function, get the minimal 3 parameters and generate new Event (Steps 1.0)
 def create_new_event(start, patient_id, contact_id):
     # Create a Google calendar event
@@ -167,12 +188,14 @@ def set_event_as_deleted(event_id):
     engine.execute(stmt)
     print("Event marked as deleted (status = 2) in Event table")
 
+
 # Get Event ID and delete event from Google Calendar (Step 2.1)
 def delete_calendar_event(event_id):
     gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
     event_to_be_deleted = gc.get_event(event_id)
     gc.delete_event(event_to_be_deleted)
     print("Event deleted from calendar successfully")
+
 
 # Get Event ID from UI and run delete flow (Step 2.0)
 def delete_event_func(event_id):
@@ -185,9 +208,3 @@ def delete_event_func(event_id):
     # Delete task from chrony
 
     print("Event deleted from whole system successfully")
-
-
-
-
-
-

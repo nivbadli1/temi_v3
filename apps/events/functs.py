@@ -389,14 +389,54 @@ def generateSomeEvents():
     create_new_event(start, patient_id, contact_id)
 
 
+# Get a Date format YYYY-MM-DD and return the available days from 8 to 17
+def get_available_slots(day):
+    avail_slots = []
+    slot = day
+    # Generate a list of dictionaries with each free DF slot:
+    while slot.hour <= 17:
+        avail_slots.append(slot.strftime("%H:%M"))
+        slot = slot + datetime.timedelta(minutes=20)
+
+    return avail_slots
+
+
+def remove_occupied_slots(slots_list, day):
+    # 1. Create a set of the same day events
+    gc = GoogleCalendar(credentials_path='credentials.json')
+    today_events_timestamps = []
+    for event in gc.get_events(day, day + datetime.timedelta(days=1)):
+        today_events_timestamps.append(event.start.strftime("%H:%M"))
+        # print("Event: ", event.event_id, event.summary, event.start, " Added to our list ")
+
+    print("Current event list: ", today_events_timestamps)
+
+    # 2. Substract the today_events_timestamps from the slots_list:
+    return list(set(slots_list) - set(today_events_timestamps))
+
+def stamp_to_datetime(stamp):
+    start_time = stamp + ' 08:00'
+    time_format = '%Y-%m-%d %H:%M'
+    day = datetime.datetime.strptime(start_time, time_format)
+    return day
+
 
 if __name__ == '__main__':
     print("~~~ Let main run ~~~")
+    fake_list = ['09:40', '10:00', '10:20', '10:40', '11:00', '11:20']
+    date = "2022-09-18"
+    new_date = stamp_to_datetime(date)
+    # slots = get_available_slots(new_date)
+    print(fake_list)
+    small_list = remove_occupied_slots(new_date)
+    a_b = list(set(fake_list) - set(small_list))
+    print("The new set is: ", a_b)
+
     # tests()
     # delete_event("s9rs89unbqq83otib2etqg2clk")
-    gc = GoogleCalendar(credentials_path='./credentials.json')
-    for event in gc:
-        print(EventSerializer.to_json(event))
+    # gc = GoogleCalendar(credentials_path='./credentials.json')
+    # for event in gc:
+    #     print(EventSerializer.to_json(event))
     # # Format: Year Month Day Hour Minute Second
     # # Add new event example:
     # start = datetime.datetime(2022, 9, 23, 11, 0, 0)
@@ -404,7 +444,7 @@ if __name__ == '__main__':
     # contact_id = 13
     # create_new_event(start, patient_id, contact_id)
 
-    generateSomeEvents()
+    # generateSomeEvents()
 
     # add_new_google_calendar_event(start)
 

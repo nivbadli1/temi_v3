@@ -28,7 +28,7 @@ from apps.events.forms import EventForm, AddNewEventForm
 # engine = create_engine(e)
 # session = Session(engine)
 from apps.events.functions import generate_days_list, replace_num_with_hebrew_day, get_available_slots, \
-    get_relevant_contacts, create_new_event, generate_patiens_json
+    get_relevant_contacts, create_new_event, generate_patiens_json, stamp_to_datetime, remove_occupied_slots
 
 
 @blueprint.route('/calendar', methods=['GET', 'POST'])
@@ -37,6 +37,7 @@ def calendar():
     eventForm = EventForm()
     add_new_event_form = AddNewEventForm()
     gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
+
     return render_template('events/calendar.html', gc=gc, eventForm=eventForm, add_new_event_form=add_new_event_form)
 
 @blueprint.route("/events/patients_list")
@@ -91,11 +92,14 @@ def all_contacts(patient_id):
     contact_json = get_relevant_contacts(patient_id)
     return contact_json
 
+# Get a date such as 2022-03-30 and return the available time slot list
 @blueprint.route('/events/generate_events_slots/<event_date>')
 @login_required
 def generate_available_events_slot(event_date):
-    slots_list = get_available_slots(event_date)
-    return jsonify({'slots': slots_list})
+    day = stamp_to_datetime(event_date)
+    slots_list = get_available_slots(day)
+    available_list = remove_occupied_slots(slots_list, day)
+    return jsonify({'slots': available_list})
 
 
 @blueprint.route('/events/days_list')
