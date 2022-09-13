@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="/static/assets/plugins/fullcalendar-bootstrap/main.min.css">
 <!-- Theme style -->
 <link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
-<link rel="stylesheet" href="/static/assets/css/events.css"
+<link rel="stylesheet" href="/static/assets/css/events.css">
 
       {% endblock stylesheets %}
 
@@ -41,7 +41,7 @@
                     </div>
 
                     <div>
-                        <button type="button" class="btn btn-success float-right" onclick="load_days(); load_patients();"
+                        <button type="button" class="btn btn-success float-right" onclick="load_patients(); load_days();"
                                 data-toggle="modal" data-target="#add_new_event_modal">אירוע חדש דנדש
                         </button>
                     </div>
@@ -137,7 +137,7 @@
 
     </div><!--   /.content-wrapper -->
 
-    <div id="add_new_event_modal" class="modal fade" role="dialog" dir="rtl">
+    <div id="add_new_event_modal"  class="modal fade" role="dialog" dir="rtl">
         <div class="modal-dialog">
             <div class="modal-content">
 
@@ -145,7 +145,7 @@
                     <h4 class="modal-title">הוספת שיחה חדשה</h4>
                 </div>
 
-                <div class="modal-body">
+                <div class="modal-body" id="add_new_event_modal_body">
                     <form method="POST"
                           action="{{ url_for('events_blueprint.add_new_event_popup') }}">
                         <div class="form-group">
@@ -239,6 +239,21 @@ function closemodal() {
 <script>
     var patient_select = document.getElementById("patient_select_form");
     var contact_select = document.getElementById("contact_select_form");
+    var modal_select = document.getElementById("add_new_event_modal_body");
+
+    function load_first_contacts () {
+    var value_2 = patient_select.options[patient_select.selectedIndex].value;
+    fetch('/events/' +  value_2).then(function(response) {
+        response.json().then(function(data) {
+           console.table(data);
+           let optionHTML_first_contact = '';
+           for (let contact of data.contacts) {
+                    optionHTML_first_contact += '<option value="' + contact.id + '">' + contact.f_name +  '</option>';
+                }
+           contact_select.innerHTML = optionHTML_first_contact;
+        });
+    });
+};
 
 
     patient_select.onchange = function() {
@@ -273,6 +288,7 @@ function closemodal() {
                     optionHTML_days += '<option value="' + day.date + '">' + day.hebrew_day + ' ' + day.date + '</option>';
                 }
            days_select.innerHTML = optionHTML_days;
+           add_first_events();
         });
     });
 };
@@ -286,6 +302,8 @@ function closemodal() {
                     optionHTML_patients += '<option value="' + patient.id + '">' + patient.f_name + ' ' + patient.l_name + '</option>';
                 }
            patient_select.innerHTML = optionHTML_patients;
+<!--           document.getElementById('patient_select_form').getElementsByTagName('option')[0].selected = 'selected'-->
+            load_first_contacts();
         });
     });
 };
@@ -307,7 +325,19 @@ function closemodal() {
     });
 };
 
-
+    function add_first_events () {
+    var day_chosen = days_select.options[days_select.selectedIndex].value;
+    fetch('/events/generate_events_slots/' +  day_chosen).then(function(response) {
+        response.json().then(function(data) {
+           console.table(data);
+           let optionHTML_slots = '';
+           for (let slot of data.slots) {
+                    optionHTML_slots += '<option value="' + slot + '">' + slot + '</option>';
+                }
+           times_select.innerHTML = optionHTML_slots;
+        });
+    });
+};
 
 
 </script>
@@ -402,8 +432,6 @@ function closemodal() {
           center: 'title',
           right : 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-
-
 
         'themeSystem': 'bootstrap',
         //Random default events

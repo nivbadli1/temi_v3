@@ -40,6 +40,7 @@ def calendar():
 
     return render_template('events/calendar.html', gc=gc, eventForm=eventForm, add_new_event_form=add_new_event_form)
 
+
 @blueprint.route("/events/patients_list")
 @login_required
 def generate_json_patients():
@@ -57,7 +58,8 @@ def add_new_event_popup():
         timestamp = add_new_event_form.data['day'] + ' ' + add_new_event_form.data['time']
         time_format = '%Y-%m-%d %H:%M'
         day_chosen = datetime.datetime.strptime(timestamp, time_format)
-        create_new_event(patient_id=add_new_event_form.data['patient'], contact_id=add_new_event_form.data['contact'], start=day_chosen)
+        create_new_event(patient_id=add_new_event_form.data['patient'], contact_id=add_new_event_form.data['contact'],
+                         start=day_chosen)
         return redirect(url_for('events_blueprint.calendar'))
 
     # Generate the New Event Form:
@@ -92,6 +94,7 @@ def all_contacts(patient_id):
     contact_json = get_relevant_contacts(patient_id)
     return contact_json
 
+
 # Get a date such as 2022-03-30 and return the available time slot list
 @blueprint.route('/events/generate_events_slots/<event_date>')
 @login_required
@@ -110,7 +113,7 @@ def get_weekdays_list():
     following_week = []
 
     for i in range(7):
-        new_date = today + datetime.timedelta(days=1+i)
+        new_date = today + datetime.timedelta(days=1 + i)
         print(new_date.isoformat(), replace_num_with_hebrew_day(new_date.weekday()))
         dayObj = {'date': new_date.isoformat(), 'hebrew_day': replace_num_with_hebrew_day(new_date.weekday())}
         following_week.append(dayObj)

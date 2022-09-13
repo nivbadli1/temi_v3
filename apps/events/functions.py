@@ -115,11 +115,11 @@ def remove_occupied_slots(slots_list, day):
     return sorted(list(set(slots_list) - set(today_events_timestamps)))
 
 
-## Related to create the actual event after we have patient, contact and full timestamp
+## Related to create the actual event after we have patient, contact and full timestamp ##
 # Step 1.0 - Create New event
 # Step 1.1 - Generate Google Calendar new event
 # Step 1.2 - Add new Event record to db
-# Step 1.3 - TBD, add new event to crond job
+# Step 1.3 - TBD, add new event to crond job with location and URI
 
 # Generate new Google Calendar Event (Step 1.1)
 def add_new_google_calendar_event(start_time, patient_name, contact_name):
@@ -179,7 +179,6 @@ def create_new_event(start, patient_id, contact_id):
     # Add new event ID to our database event table
     add_event_to_db(event, patient_id, contact_id)
 
-    # Add new event job in crony
     # Need to get the robot locations and translate patient bed to robot location.
     # patient_bed = session.query(Patient.bed).filter(patient_id == patient_id).first()[0]
     # Translate Bed to Robot Location:
