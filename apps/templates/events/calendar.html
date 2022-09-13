@@ -231,16 +231,34 @@
 
 function closemodal() {
       $('#add_new_contact_modal').modal('hide');
-      alert("is it working")
 };
 
 </script>
 
 <script>
+
+<!-- 4 selectors for the 4 elements in Add New Event form (Patient, Contact, Day and Time slot)-->
     var patient_select = document.getElementById("patient_select_form");
     var contact_select = document.getElementById("contact_select_form");
-    var modal_select = document.getElementById("add_new_event_modal_body");
+    var days_select = document.getElementById("days_select_form");
+    var times_select = document.getElementById("times_select_form");
 
+<!-- First, fetch the whole patients list -->
+    function load_patients() {
+    fetch('/events/patients_list').then(function(response) {
+        response.json().then(function(data) {
+           console.table(data);
+           let optionHTML_patients = '';
+           for (let patient of data.patients) {
+                    optionHTML_patients += '<option value="' + patient.id + '">' + patient.f_name + ' ' + patient.l_name + '</option>';
+                }
+           patient_select.innerHTML = optionHTML_patients;
+            load_first_contacts();
+        });
+    });
+};
+
+<!-- Then, get the current selected patient and fetch his contacts -->
     function load_first_contacts () {
     var value_2 = patient_select.options[patient_select.selectedIndex].value;
     fetch('/events/' +  value_2).then(function(response) {
@@ -255,6 +273,41 @@ function closemodal() {
     });
 };
 
+<!-- LAter, load the days (show 7 days ahead but can be editable) -->
+    function load_days() {
+    fetch('/events/days_list').then(function(response) {
+        response.json().then(function(data) {
+           console.table(data);
+           let optionHTML_days = '';
+           for (let day of data.weekdays) {
+                    optionHTML_days += '<option value="' + day.date + '">' + day.hebrew_day + ' ' + day.date + '</option>';
+                }
+           days_select.innerHTML = optionHTML_days;
+           add_first_events();
+        });
+    });
+};
+
+<!-- After the days list created, get the selected day for the first time and generate free time slots list -->
+
+    function add_first_events () {
+    var day_chosen = days_select.options[days_select.selectedIndex].value;
+    fetch('/events/generate_events_slots/' +  day_chosen).then(function(response) {
+        response.json().then(function(data) {
+           console.table(data);
+           let optionHTML_slots = '';
+           for (let slot of data.slots) {
+                    optionHTML_slots += '<option value="' + slot + '">' + slot + '</option>';
+                }
+           times_select.innerHTML = optionHTML_slots;
+        });
+    });
+};
+
+<!-- Now we have the patients list, the matching contact, 7 days list and free time slots for the chosen day -->
+<!-- We need to make 2 on change functions, when we change a Patient(Generate new contact list) and when we change a Day (Generate new free slot time list according to the day selected)-->
+
+<!-- When patient is changed, fetch the relevant contacts list -->
 
     patient_select.onchange = function() {
     var value = patient_select.options[patient_select.selectedIndex].value;
@@ -271,44 +324,7 @@ function closemodal() {
     });
 };
 
-</script>
-
-<script>
-    var patient_select = document.getElementById("patient_select_form");
-    var days_select = document.getElementById("days_select_form");
-    var times_select = document.getElementById("times_select_form");
-
-
-    function load_days() {
-    fetch('/events/days_list').then(function(response) {
-        response.json().then(function(data) {
-           console.table(data);
-           let optionHTML_days = '';
-           for (let day of data.weekdays) {
-                    optionHTML_days += '<option value="' + day.date + '">' + day.hebrew_day + ' ' + day.date + '</option>';
-                }
-           days_select.innerHTML = optionHTML_days;
-           add_first_events();
-        });
-    });
-};
-
-    function load_patients() {
-    fetch('/events/patients_list').then(function(response) {
-        response.json().then(function(data) {
-           console.table(data);
-           let optionHTML_patients = '';
-           for (let patient of data.patients) {
-                    optionHTML_patients += '<option value="' + patient.id + '">' + patient.f_name + ' ' + patient.l_name + '</option>';
-                }
-           patient_select.innerHTML = optionHTML_patients;
-<!--           document.getElementById('patient_select_form').getElementsByTagName('option')[0].selected = 'selected'-->
-            load_first_contacts();
-        });
-    });
-};
-
-
+<!-- On Day change, fetch the current available time slots  -->
 
     days_select.onchange = function() {
     var day_chosen = days_select.options[days_select.selectedIndex].value;
@@ -325,19 +341,7 @@ function closemodal() {
     });
 };
 
-    function add_first_events () {
-    var day_chosen = days_select.options[days_select.selectedIndex].value;
-    fetch('/events/generate_events_slots/' +  day_chosen).then(function(response) {
-        response.json().then(function(data) {
-           console.table(data);
-           let optionHTML_slots = '';
-           for (let slot of data.slots) {
-                    optionHTML_slots += '<option value="' + slot + '">' + slot + '</option>';
-                }
-           times_select.innerHTML = optionHTML_slots;
-        });
-    });
-};
+
 
 
 </script>
@@ -455,7 +459,6 @@ function closemodal() {
           }
         },
          eventClick: function(info) {
-<!--           alert('Event: ' + info.event.title);-->
            info.jsEvent.preventDefault(); // don't let the browser navigate
            var modal = document.getElementById("add_new_contact_modal");
            console.log("Chosen event ID is:");

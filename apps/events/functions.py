@@ -1,31 +1,32 @@
-# Modules Imports:
+# External Modules Imports:
 import datetime
-
+import logging
 from crontab import CronTab
 from flask import app, jsonify
 
+# Internal Modules imports:
 from apps.authentication.models import Event, Patient, Contact
+from apps.events.functs import generate_json
 
-#  Google Calendar Imports:
-
+# Google Calendar Imports:
 from gcsa.google_calendar import GoogleCalendar
-#  SQL Alchemy
+
+# SQL Alchemy
 from sqlalchemy.sql.expression import update
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from apps.events.functs import generate_json
-from apps.patients.utils import get_days_list
 
 #  Global Configuration For Class:
 e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
 engine = create_engine(e)
 session = Session(engine)
 DAYS_TO_SHOW_IN_EVENTS = 7
+logger = logging.getLogger(__name__)
 
 
-# Add New Event Related Functions
-# Utils:
+#### Add New Event Related Functions
+### Utils:
 def replace_num_with_hebrew_day(day):
     d = dict({
         6: "ראשון",
@@ -60,6 +61,7 @@ def generate_days_list():
     from_date = datetime.datetime.today()
     today = from_date.date()
     following_week = []
+    logger.info("IS it working ???")
 
     for i in range(DAYS_TO_SHOW_IN_EVENTS):
         new_date = today + datetime.timedelta(days=1 + i)

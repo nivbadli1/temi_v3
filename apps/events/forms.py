@@ -21,8 +21,3 @@ class AddNewEventForm(FlaskForm):
     contact = SelectField('איש קשר', choices=[], validators=[DataRequired()])
     day = SelectField('יום', choices=[], validators=[DataRequired()])
     time = SelectField('שעה', choices=[], validators=[DataRequired()])
-
-
-
-
-

@@ -24,9 +24,6 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from apps.events import functions
 from apps.events.forms import EventForm, AddNewEventForm
 
-# e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
-# engine = create_engine(e)
-# session = Session(engine)
 from apps.events.functions import generate_days_list, replace_num_with_hebrew_day, get_available_slots, \
     get_relevant_contacts, create_new_event, generate_patiens_json, stamp_to_datetime, remove_occupied_slots
 
