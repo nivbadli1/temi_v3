@@ -136,7 +136,7 @@ def add_contact(patient_id):
     return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
 
 
-@blueprint.route('/<int:contact_id>/delete_contact', methods=['GET', 'POST'])
+@blueprint.route('/delete_contact/<int:contact_id>', methods=['GET', 'POST'])
 @login_required
 def delete_contact(contact_id):
     contact = Contact.query.get(contact_id)
@@ -149,7 +149,7 @@ def delete_contact(contact_id):
     return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
 
 
-@blueprint.route('/<int:contact_id>/update_contact', methods=['GET', 'POST'])
+@blueprint.route('/update_contact/<int:contact_id>', methods=['GET', 'POST'])
 def update_contact(contact_id):
     contact_form = ContactForm()
     contact = Contact.query.get(contact_id)
