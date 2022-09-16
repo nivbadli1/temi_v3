@@ -3,7 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from flask import render_template, redirect, request, url_for, session, flash
+from flask import render_template, redirect, request, url_for, session, flash,jsonify
 from flask_login import (
     current_user,
     login_user,
@@ -21,10 +21,11 @@ from apps.authentication.util import verify_pass
 @login_required
 def patients_list():
     # flash('You have subscribed to the newsletter!', 'success')
+    form = PatientForm()
     patients = Patient.query.all()
-    return render_template('patients/patients_list.html', patients=patients)
+    return render_template('patients/patients_list.html', patients=patients,patient_form=form)
 
-@blueprint.route("/<int:patient_id>/update_patient", methods=['GET', 'POST'])
+@blueprint.route("/update_patient/<int:patient_id>", methods=['GET', 'POST'])
 @login_required
 def update_patient(patient_id):
     form = PatientForm()
@@ -32,7 +33,6 @@ def update_patient(patient_id):
     p = Patient.query.filter_by(patient_id=patient_id).first_or_404()
 
     if request.method == 'POST':
-        p.patient_id = form.patient_id.data
         p.f_name = form.f_name.data
         p.l_name = form.l_name.data
         p.bed = form.bed.data
@@ -41,7 +41,8 @@ def update_patient(patient_id):
         db.session.commit()
         # flash("מטופל {} עודכן בהצלחה".format(p.f_name))
         if 'patients_list' in request.form:
-            return redirect(url_for('patients.list'))
+            print("HIHIH")
+            return redirect(url_for('patients_blueprint.patients_list'))
     # If request.method == 'GET' get patient information
     elif request.method == 'GET':
         form.patient_id.data = p.patient_id
@@ -52,7 +53,7 @@ def update_patient(patient_id):
         form.max_calls.data = p.max_calls
         # contacts = Patient.query.get(patient_id).contacts
         # session.query(ContactsTime).filter_by(patient_id=4).all()
-    return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
+    return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id,form=form))
 
 
 @blueprint.route("/add_patient", methods=['GET', 'POST'])
@@ -101,6 +102,7 @@ def patient_info(patient_id):
     patient_form = PatientForm()
     contact_form = ContactForm()
     contact_time_form = ContactTimeForm()
+    contact_time_form.day.default = "3"
     # Get all attributes of the patient
     patient = Patient.query.filter_by(patient_id=patient_id).first_or_404()
     # contacts = p.contacts
@@ -134,7 +136,7 @@ def add_contact(patient_id):
     return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
 
 
-@blueprint.route('/<int:contact_id>/delete_contact', methods=['GET', 'POST'])
+@blueprint.route('/delete_contact/<int:contact_id>', methods=['GET', 'POST'])
 @login_required
 def delete_contact(contact_id):
     contact = Contact.query.get(contact_id)
@@ -147,7 +149,7 @@ def delete_contact(contact_id):
     return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
 
 
-@blueprint.route('/<int:contact_id>/update_contact', methods=['GET', 'POST'])
+@blueprint.route('/update_contact/<int:contact_id>', methods=['GET', 'POST'])
 def update_contact(contact_id):
     contact_form = ContactForm()
     contact = Contact.query.get(contact_id)
@@ -184,21 +186,23 @@ def add_contact_time(contact_id):
 @login_required
 def update_contact_time(time_id):
     contact_time_form = ContactTimeForm()
-    time = ContactTime.query.get(id=time_id)
-    contact_id = time.contact_id
-    patient_id = contact_id.patient_id
+    time = ContactTime.query.filter_by(id=time_id).first_or_404()
+    patient_id = Contact.query.filter_by(contact_id=time.contact_id).first_or_404().patient_id
     if request.method == 'POST':
         time.day = contact_time_form.day.data
-        time.from_hour = contact_time_form.from_hour.data
-        time.to_hour = contact_time_form.to_hour.data
-        time.contact_id = contact_id.patient_id
+        time.from_hour = dict(contact_time_form.from_hour.choices).get(contact_time_form.from_hour.data)
+        time.to_hour = dict(contact_time_form.to_hour.choices).get(contact_time_form.to_hour.data)
+        time.contact_id = time.contact_id
         db.session.commit()
         flash("איש הקשר עודכן בהצלחה")
+        return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
 
     if request.method == "GET":
-        contact_time_form.day.data = time.day
-        contact_time_form.from_hour.data = time.from_hour
-        contact_time_form.to_hour.data = time.to_hour
+        # contact_time_form.day.data.selected = time.day
+        # contact_time_form.from_hour.data.selected = time.from_hour
+        # contact_time_form.to_hour.data.selected = time.to_hour
+        return jsonify(data={"day": "17","from_hour":"10:00:00","to_hour":"12:00:00"})
+
     return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
 
 @blueprint.route('/<int:time_id>/delete_contact_time', methods=['GET', 'POST'])

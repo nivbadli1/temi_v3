@@ -33,6 +33,7 @@ class ContactForm(FlaskForm):
 
 
 class ContactTimeForm(FlaskForm):
-    day = SelectField('יום', choices=get_days_list(), validators=[DataRequired()])
+    # option_widget = widget.
+    day = SelectField('יום', choices=get_days_list(),coerce=str,option_widget={"selected":"3"})
     from_hour = SelectField('משעה', choices=get_times_list(), validators=[DataRequired()])
     to_hour = SelectField('עד שעה', choices=get_times_list(), validators=[DataRequired()])

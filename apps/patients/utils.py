@@ -8,9 +8,11 @@ def get_days_list():
         "4": "רביעי",
         "5": "חמישי",
         "6": "שישי",
-        "7": "שבת",
+        "7": "שבת"
     })
-    return [(key,value) for (key,value) in d.items()]
+    # l = [(key, value, "") for (key, value) in d.items()]
+    # l[1] = ('2', 'שני', 'selected')
+    return [(key, value) for (key, value) in d.items()]
 
 def get_times_list():
     times = []
