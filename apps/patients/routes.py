@@ -37,6 +37,7 @@ def update_patient(patient_id):
         p.l_name = form.l_name.data
         p.bed = form.bed.data
         p.department = current_user.id
+        p.department = current_user.id
         p.max_calls = form.max_calls.data
         db.session.commit()
         # flash("מטופל {} עודכן בהצלחה".format(p.f_name))
