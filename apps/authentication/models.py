@@ -6,6 +6,8 @@ Copyright (c) 2019 - present AppSeed.us
 from flask_login import UserMixin
 from datetime import datetime
 
+from pytz import lazy
+
 from apps import db, login_manager
 
 from apps.authentication.util import hash_pass
@@ -18,6 +20,9 @@ class Users(db.Model, UserMixin):
     username = db.Column(db.String(64), unique=True)
     email = db.Column(db.String(64), unique=True)
     password = db.Column(db.LargeBinary)
+    patients = db.relationship('Patient', back_populates='department', lazy='select')
+    events = db.relationship('Event', back_populates='department', lazy='select')
+    user_times = db.relationship('UserTime', back_populates='user', lazy='select')
 
     def __init__(self, **kwargs):
         for property, value in kwargs.items():
@@ -44,10 +49,11 @@ class Patient(db.Model):
     f_name = db.Column(db.String(50))
     l_name = db.Column(db.String(50))
     bed = db.Column(db.Integer)
-    department = db.Column(db.Integer, db.ForeignKey('Users.id'), nullable=False)
+    department_id = db.Column(db.Integer, db.ForeignKey('Users.id', ondelete='CASCADE', onupdate='CASCADE'), index=True)
     max_calls = db.Column(db.Integer)
-    contacts = db.relationship('Contact', backref='patient', lazy='select')
-    events = db.relationship('Event', backref='patient', lazy='dynamic')
+    contacts = db.relationship('Contact', back_populates='patient', lazy='select')
+    events = db.relationship('Event', back_populates='patient', lazy='select')
+    department = db.relationship('Users', back_populates='patients', lazy='select')
 
     def __init__(self, patient_id, f_name, l_name, bed, department, max_calls):
         self.patient_id = patient_id
@@ -69,17 +75,18 @@ class Patient(db.Model):
 class Contact(db.Model):
     __tablename__ = 'contacts'
 
-
     contact_id = db.Column(db.Integer, primary_key=True)
     f_name = db.Column(db.String(50))
     l_name = db.Column(db.String(50))
     phone = db.Column(db.String(50))
     mail = db.Column(db.String(50))
     priority = db.Column(db.Integer)
+
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id', ondelete='CASCADE', onupdate='CASCADE'),
                            index=True)
-    events = db.relationship('Event', backref='contact', lazy='dynamic')
-    contacts_times = db.relationship('ContactTime', backref='contact', lazy='select')
+    patient = db.relationship('Patient', back_populates='contacts')
+    events = db.relationship('Event', back_populates='contact', lazy='select')
+    contact_time = db.relationship('ContactTime', back_populates='contact', lazy='select')
 
     def __init__(self, patient_id, f_name, l_name, phone, mail, priority):
         self.patient_id = patient_id
@@ -89,20 +96,21 @@ class Contact(db.Model):
         self.mail = mail
         self.priority = priority
 
-
     def __repr__(self):
         return '<Contact: %s, %s, %s, %s, %s>' % (self.f_name, self.l_name, self.phone, self.mail, self.priority)
+
 
 class ContactTime(db.Model):
     __tablename__ = 'contacts_times'
 
     id = db.Column(db.Integer, primary_key=True)
     day = db.Column(db.Integer)
-    contact_id = db.Column(db.Integer,db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'),
+    contact_id = db.Column(db.Integer, db.ForeignKey('contacts.contact_id', ondelete='CASCADE', onupdate='CASCADE'),
                            index=True)
-    from_hour = db.Column( db.Time)
+    from_hour = db.Column(db.Time)
     to_hour = db.Column(db.Time)
-    contacts = db.relationship(Contact,backref='contact')
+
+    contact = db.relationship('Contact', back_populates='contact_time', lazy='select')
     def __init__(self, contact_id, day, from_hour, to_hour):
         self.contact_id = contact_id
         self.day = day
@@ -112,19 +120,26 @@ class ContactTime(db.Model):
     def __repr__(self):
         return '<Time: %s, %s, %s, %s, %s>' % (self.day, self.from_hour, self.to_hour, self.id, self.contact_id)
 
-class DepartmentsTimes(db.Model):
-    __tablename__ = 'departments_times'
 
-    deprtment_id = db.Column(db.Integer, db.ForeignKey('Users.id'), nullable=False)
-    _from = db.Column('from', db.Time, primary_key=True, nullable=False)
-    to = db.Column(db.Time, primary_key=True, nullable=False)
-    day = db.Column(db.Integer, primary_key=True, nullable=False)
+class UserTime(db.Model):
+    __tablename__ = 'users_times'
 
-    def __init__(self, num, _from, to, day):
-        self.num = num
-        self._from = _from
-        self.to = to
+    id = db.Column(db.Integer, primary_key=True)
+    day = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.id', ondelete='CASCADE', onupdate='CASCADE'),
+                        index=True)
+    from_hour = db.Column(db.Time)
+    to_hour = db.Column(db.Time)
+    user = db.relationship('Users', back_populates='user_times', lazy='select')
+
+    def __init__(self, user_id, day, from_hour, to_hour):
+        self.user_id = user_id
         self.day = day
+        self.from_hour = from_hour
+        self.to_hour = to_hour
+
+    def __repr__(self):
+        return '<Time: %s, %s, %s, %s, %s>' % (self.day, self.from_hour, self.to_hour, self.id, self.user_id)
 
 
 class LogMng(db.Model):
@@ -146,9 +161,15 @@ class Event(db.Model):
     url = db.Column(db.String(256))
     contact_id = db.Column(db.Integer, db.ForeignKey('contacts.contact_id'))
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id'))
+    department_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
     start_time = db.Column(db.TIMESTAMP)
     status = db.Column(db.Integer)
     row_created_time = db.Column(db.TIMESTAMP, default=datetime.now())
+
+    # Relationships
+    contact = db.relationship('Contact', back_populates='events', lazy='select')
+    patient = db.relationship('Patient', back_populates='events', lazy='select')
+    department = db.relationship('Users', back_populates='events', lazy='select')
 
     def __init__(self, event_id, url, start_time, status, patient_id, contact_id):
         self.url = url
