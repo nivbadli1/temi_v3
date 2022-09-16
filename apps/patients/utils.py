@@ -19,5 +19,5 @@ def get_times_list():
     for hour in range(24):
         for minute in range(0, 60, 30):
             times.append('{:02d}:{:02d}:00'.format(hour, minute))
-    times = [("time",value) for value in times]
+    times = [(value, value) for value in times]
     return times

@@ -52,7 +52,7 @@ def job():
     print("Strating job running")
 
 
-sched.add_job(job, 'interval', seconds=5)
+# sched.add_job(job, 'interval', seconds=5)
 
 # Migrate(app, db)
 
