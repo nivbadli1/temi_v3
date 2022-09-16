@@ -7,6 +7,10 @@ import uuid
 import sys
 from datetime import datetime,timedelta,date as dt
 
+def get_free_slots(days:int,object):
+
+
+
 def convert_time_cols_to_time_delta(df,cols):
     """
     :param df: df to convert cols
@@ -56,7 +60,6 @@ def transform_time_df_to_datetime_df(df,next_days_num):
     df = convert_time_cols_to_time_delta(df, ['from', 'to'])
     df = concact_time_cols_and_date(df,next_days_num)
     return df
-
 
 # The function get start end and freq and return pd_data range
 def get_df_date_range(start,end,freq):
