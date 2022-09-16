@@ -3,7 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from flask import render_template, redirect, request, url_for, session, flash,jsonify
+from flask import render_template, redirect, request, url_for, session, flash, jsonify
 from flask_login import (
     current_user,
     login_user,
@@ -23,7 +23,8 @@ def patients_list():
     # flash('You have subscribed to the newsletter!', 'success')
     form = PatientForm()
     patients = Patient.query.all()
-    return render_template('patients/patients_list.html', patients=patients,patient_form=form)
+    return render_template('patients/patients_list.html', patients=patients, patient_form=form)
+
 
 @blueprint.route("/update_patient/<int:patient_id>", methods=['GET', 'POST'])
 @login_required
@@ -53,7 +54,7 @@ def update_patient(patient_id):
         form.max_calls.data = p.max_calls
         # contacts = Patient.query.get(patient_id).contacts
         # session.query(ContactsTime).filter_by(patient_id=4).all()
-    return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id,form=form))
+    return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id, form=form))
 
 
 @blueprint.route("/add_patient", methods=['GET', 'POST'])
@@ -75,7 +76,7 @@ def add_patient():
         )
         db.session.add(p)
         db.session.commit()
-        return redirect(url_for('patients_blueprint.patient_info',patient_id = form.patient_id.data))
+        return redirect(url_for('patients_blueprint.patient_info', patient_id=form.patient_id.data))
         # return redirect(url_for('patients_blueprint.patient_info', patient_id=p.patient_id))
         # flash("מטופל {} עודכן בהצלחה".format(p.f_name))
     return render_template('patients/add_patient.html', form=form)
@@ -166,6 +167,7 @@ def update_contact(contact_id):
 
     return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
 
+
 # Contactime functions
 @blueprint.route("/<int:contact_id>/add_contact_time", methods=['GET', 'POST'])
 @login_required
@@ -181,6 +183,7 @@ def add_contact_time(contact_id):
         db.session.commit()
         flash("זמן איש הקשר הוסף בהצלחה")
     return redirect(url_for('patients_blueprint.patient_info', patient_id=contact.patient.patient_id))
+
 
 @blueprint.route('/<int:time_id>/update_contact_time', methods=['GET', 'POST'])
 @login_required
@@ -201,9 +204,10 @@ def update_contact_time(time_id):
         # contact_time_form.day.data.selected = time.day
         # contact_time_form.from_hour.data.selected = time.from_hour
         # contact_time_form.to_hour.data.selected = time.to_hour
-        return jsonify(data={"day": "17","from_hour":"10:00:00","to_hour":"12:00:00"})
+        return jsonify(data={"day": "17", "from_hour": "10:00:00", "to_hour": "12:00:00"})
 
     return redirect(url_for('patients_blueprint.patient_info', patient_id=patient_id))
+
 
 @blueprint.route('/<int:time_id>/delete_contact_time', methods=['GET', 'POST'])
 @login_required
