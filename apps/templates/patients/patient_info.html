@@ -81,8 +81,7 @@
                             <hr class="horizontal dark">
 
 
-                            <button data-target="#edit_patient_modal" data-toggle="modal"
-                                    class="btn btn-primary btn-sm ">
+                            <button data-target="#edit_patient_modal" data-toggle="modal" class="btn btn-primary btn-sm ">
                                 ערוך פרטי מטופל
                             </button>
 
@@ -153,9 +152,58 @@
                                     <h6 class="mb-0">פרטי אנשי הקשר</h6>
                                 </div>
                                 <div class="col-6 text-start">
-                                    <a class="btn bg-gradient-success mb-0" href="javascript:;"><i class="fas fa-plus"
-                                                                                                   aria-hidden="true"></i>&nbsp;&nbsp;הוספת
-                                        איש קשר חדש</a>
+<!--                                <a class="btn bg-gradient-success mb-0" href="javascript:;"><i class="fas fa-plus" aria-hidden="true"></i>הוספת איש קשר חדש</a>-->
+                                <button data-target="#add_new_contact_modal" data-toggle="modal" aria-hidden="true" class="btn bg-gradient-success mb-0">
+                                הוספת איש קשר חדש
+                                </button>
+                                                                           <!-- add contact modal -->
+                                            <div id="add_new_contact_modal" class="modal fade" role="dialog" dir="rtl">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title">הוספת איש קשר חדש חדש</h4>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                                <form method="POST" action="{{ url_for('patients_blueprint.add_contact',patient_id=patient.patient_id) }}">
+                                                                <div class="form-group">
+                                                                    {{ contact_form.f_name.label(class="form-control-label") }}
+                                                                    {{ contact_form.f_name(class="form-control" ) }}
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    {{ contact_form.l_name.label(class="form-control-label") }}
+                                                                    {{ contact_form.l_name(class="form-control" ) }}
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    {{ contact_form.phone.label(class="form-control-label") }}
+                                                                    {{ contact_form.phone(class="form-control" ) }}
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    {{ contact_form.mail.label(class="form-control-label") }}
+                                                                    {{ contact_form.mail(class="form-control" ) }}
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    {{ contact_form.priority.label(class="form-control-label") }}
+                                                                    {{ contact_form.priority(class="form-control" ) }}
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    <button class="btn btn-primary" type="submit"> הוספת איש קשר חדש</button>
+                                                                </div>
+
+                                                            </form>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
                                 </div>
                             </div>
                         </div>
@@ -197,8 +245,7 @@
                                                                         קשר</h4>
                                                                 </div>
                                                                 <div class="modal-body">
-                                                                    <form method="POST"
-                                                                          action="{{ url_for('patients_blueprint.update_contact',contact_id=contact.contact_id,contact_form=contact_form) }}">
+                                                                    <form method="POST" action="{{ url_for('patients_blueprint.update_contact',contact_id=contact.contact_id,contact_form=contact_form) }}">
                                                                         <div class="form-group">
                                                                             {{ contact_form.f_name.label(class="form-control-label") }}
                                                                             {{ contact_form.f_name(class="form-control",value=contact.f_name) }}
@@ -240,9 +287,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
-
-
 
                                                     <!-- Delete Contact modal!-->
                                                     <div id="modal_del_contact{{ contact.contact_id }}"
@@ -372,10 +416,12 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p>האם את\ה בטוח\ה שברצונך למחוק את
-                                                        {{ time.id }}
-                                                        מרשימת הזמנים של
+                                                    <p>האם את\ה בטוח\ה שברצונך למחוק את העדפות השעה של
                                                         {{ contact.f_name }}
+                                                        ביום
+                                                        {{ time.day }}
+                                                        בשעה
+                                                        {{ time.hour }}
                                                     </p>
                                                 </div>
                                                 <div class="modal-footer">
