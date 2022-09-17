@@ -266,14 +266,14 @@ function closemodal() {
            console.table(data);
            let optionHTML_first_contact = '';
            for (let contact of data.contacts) {
-                    optionHTML_first_contact += '<option value="' + contact.id + '">' + contact.f_name +  '</option>';
+                    optionHTML_first_contact += '<option value="' + contact.id + '">' + contact.f_name + ' ' + contact.l_name +  '</option>';
                 }
            contact_select.innerHTML = optionHTML_first_contact;
         });
     });
 };
 
-<!-- LAter, load the days (show 7 days ahead but can be editable) -->
+<!-- Later, load the days (show 7 days ahead but can be editable) -->
     function load_days() {
     fetch('/events/days_list').then(function(response) {
         response.json().then(function(data) {
@@ -310,35 +310,13 @@ function closemodal() {
 <!-- When patient is changed, fetch the relevant contacts list -->
 
     patient_select.onchange = function() {
-    var value = patient_select.options[patient_select.selectedIndex].value;
-
-    fetch('/events/' +  value).then(function(response) {
-        response.json().then(function(data) {
-           console.table(data);
-           let optionHTML = '';
-           for (let contact of data.contacts) {
-                    optionHTML += '<option value="' + contact.id + '">' + contact.f_name +  '</option>';
-                }
-           contact_select.innerHTML = optionHTML;
-        });
-    });
+    load_first_contacts();
 };
 
 <!-- On Day change, fetch the current available time slots  -->
 
     days_select.onchange = function() {
-    var day_chosen = days_select.options[days_select.selectedIndex].value;
-
-    fetch('/events/generate_events_slots/' +  day_chosen).then(function(response) {
-        response.json().then(function(data) {
-           console.table(data);
-           let optionHTML_slots = '';
-           for (let slot of data.slots) {
-                    optionHTML_slots += '<option value="' + slot + '">' + slot + '</option>';
-                }
-           times_select.innerHTML = optionHTML_slots;
-        });
-    });
+    add_first_events();
 };
 
 

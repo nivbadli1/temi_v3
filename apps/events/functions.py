@@ -74,12 +74,12 @@ def generate_days_list():
 
 # Get patient ID, return a json of contacts with ID and f_name
 def get_relevant_contacts(patient_id):
-    contacts = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.patient_id).filter_by(
+    contacts = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.l_name, Contact.patient_id).filter_by(
         patient_id=patient_id)
     contactArray = []
 
     for contact in contacts:
-        contactObj = {'id': contact.contact_id, 'f_name': contact.f_name}
+        contactObj = {'id': contact.contact_id, 'f_name': contact.f_name, 'l_name': contact.l_name}
         contactArray.append(contactObj)
 
     # Return the relevant contact list as a json named contacts
