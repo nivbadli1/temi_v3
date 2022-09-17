@@ -300,9 +300,42 @@
                                                                 <th class="text-uppercase text-secondary text-m font-weight-bolder opacity-7 ps-2">  משעה  </th>
                                                                 <th class="text-center text-uppercase text-secondary text-m font-weight-bolder opacity-7"> עד שעה </th>
                                                                 <th class="text-primary opacity-7"></th>
-                                                                <th type="button" class=" text-primary opacity-7 btn btn-success float-right" data-toggle="modal" data-target="#add_contact_time_modal{{ contact.contact_id }}">
+                                                                <th type="button" class="text-primary opacity-7 btn btn-success float-right" data-toggle="modal" data-target="#add_contact_time_modal{{ contact.contact_id }}">
                                                                     הוספת שורה חדשה
                                                                 </th>
+
+                                                                                                    <div id="add_contact_time_modal{{ contact.contact_id }}" class="modal fade" role="dialog" dir="rtl">
+                                    <div class="modal-dialog">
+                                       <div class="modal-content">
+                                          <div class="modal-header"> <h4 class="modal-title"> הוספת חלון זמן </h4> </div>
+                                          <div class="modal-body">
+                                             <form method="POST" action="{{ url_for('patients_blueprint.add_contact_time',contact_id = contact.contact_id) }}">
+                                                <div class="row">
+                                                   <div class="form-group col-md-3">
+                                                      {{ contact_time_form.day.label(class="form-control-label") }}
+                                                      {{ contact_time_form.day(class="form-control") }}
+                                                   </div>
+                                                   <div class="form-group col-md-3">
+                                                      {{ contact_time_form.from_hour.label(class="form-control-label") }}
+                                                      {{ contact_time_form.from_hour(class="form-control") }}
+                                                   </div>
+                                                   <div class="form-group col-md-3">
+                                                      {{ contact_time_form.to_hour.label(class="form-control-label") }}
+                                                      {{ contact_time_form.to_hour(class="form-control") }}
+                                                   </div>
+                                                   <div class="form-group">
+                                                      <button class="btn btn-primary" type="submit"> שמירת  שינויים </button>
+                                                   </div>
+                                                </div>
+                                             </form>
+                                          </div>
+                                          <div class="modal-footer">
+                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                          </div>
+                                       </div>
+                                    </div>
+                                    </div>
+
                                                             </tr>
                                                             </thead>
 
@@ -318,50 +351,18 @@
                                                                     <td class="align-middle text-center">
                                                                         <span class="text-secondary text-m font-weight-bold">{{ time.to_hour }}</span>
                                                                     <td>
-                                                                    <td><a data-target="#del_contact_time_modal{{ time.id }}"
-                                                                           data-toggle="modal"
-                                                                           class="btn btn-link text-danger text-gradient px-3 mb-0"><i
-                                                                            class="far fa-trash-alt me-2"></i>מחיקה</a>
+                                                                    <td>
+                                                                        <a data-target="#del_contact_time_modal{{ time.id }}" data-toggle="modal" class="btn btn-link text-danger text-gradient px-3 mb-0">
+                                                                        <i class="far fa-trash-alt me-2"></i>מחיקה</a>
+
                                                                     </td>
+<!--                                                                    <td type="button" class="text-primary opacity-7 btn-danger float-right" data-toggle="modal" data-target="#del_contact_time_modal{{ time.id }}}">-->
+<!--                                                                    מחיקה-->
+<!--                                                                    </td>-->
+                                                                                                                  <!-- delete contact modal -->
+
                                                                 </tr>
-
-                                                            <!-- Add  contact time modal -->
-<div id="add_contact_time_modal{{ contact.contact_id }}" class="modal fade" role="dialog" dir="rtl">
-   <div class="modal-dialog">
-      <div class="modal-content">
-         <div class="modal-header"> <h4 class="modal-title"> הוספת חלון זמן </h4> </div>
-         <div class="modal-body">
-            <form method="POST" action="{{ url_for('patients_blueprint.add_contact_time',contact_id = contact.contact_id) }}">
-               <div class="row">
-                  <div class="form-group col-md-3">
-                     {{ contact_time_form.day.label(class="form-control-label") }}
-                     {{ contact_time_form.day(class="form-control") }}
-                  </div>
-                  <div class="form-group col-md-3">
-                     {{ contact_time_form.from_hour.label(class="form-control-label") }}
-                     {{ contact_time_form.from_hour(class="form-control") }}
-                  </div>
-                  <div class="form-group col-md-3">
-                     {{ contact_time_form.to_hour.label(class="form-control-label") }}
-                     {{ contact_time_form.to_hour(class="form-control") }}
-                  </div>
-                  <div class="form-group">
-                     <button class="btn btn-primary" type="submit"> שמירת  שינויים </button>
-                  </div>
-               </div>
-            </form>
-         </div>
-         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-         </div>
-      </div>
-   </div>
-</div>
-
-                                                            {% endfor %}
-
-                                    <!-- delete contact modal -->
-                                    <div class="modal" tabindex="-1" role="dialog" id="del_contact_time_modal{{ time.id }}">
+                                    <div class="modal fade" role="dialog" dir="rtl" id="del_contact_time_modal{{ time.id }}">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
@@ -372,7 +373,7 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <p>האם את\ה בטוח\ה שברצונך למחוק את
-                                                        {{ time.from }} {{ time.to }} {{ time.day }}
+                                                        {{ time.id }}
                                                         מרשימת הזמנים של
                                                         {{ contact.f_name }}
                                                     </p>
@@ -385,6 +386,12 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                                            <!-- Add  contact time modal -->
+
+                                                            {% endfor %}
+
+
 
                                                             </tbody>
                                                         </table>
