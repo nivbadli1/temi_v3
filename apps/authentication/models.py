@@ -2,11 +2,13 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
-
+import pandas as pd
 from flask_login import UserMixin
 from datetime import datetime
 
+import pandas as pd
 from pytz import lazy
+from sqlalchemy import inspect
 
 from apps import db, login_manager
 
@@ -63,6 +65,22 @@ class Patient(db.Model):
         self.department = department
         self.max_calls = max_calls
 
+
+    @classmethod
+    def to_dict(cls, with_relationships=True):
+        d = {}
+        for column in cls.__table__.columns:
+            if with_relationships and len(column.foreign_keys) > 0:
+                # Skip foreign keys
+                continue
+            d[column.name] = getattr(cls, column.name)
+
+        if with_relationships:
+            for relationship in inspect(cls).relationships:
+                val = getattr(cls, relationship.key)
+                d[relationship.key] = cls.to_dict(val) if val else None
+        return d
+
     def get_patient_contacts(self):
         for contact in self.contacts:
             print(contact.id, contact.f_name)
@@ -70,6 +88,16 @@ class Patient(db.Model):
     def __repr__(self):
         return "Patient(patient_id='%s', l_name='%s', f_name='%s', bed='%s', department='%s', max_calls='%s')" % (
             self.patient_id, self.l_name, self.f_name, self.bed, self.department, self.max_calls)
+
+    @classmethod
+    def get_df(cls) -> pd.DataFrame:
+        cols = [c.name for c in cls.__table__.columns]
+        pk = [c.name for c in cls.__table__.primary_key]
+
+        # return cols,pk
+        # tuplefield_list = [(getattr(item, col) for col in cols) for item in db.query(cls).all()]
+        # df = pd.DataFrame.from_records(tuplefield_list, index=pk, columns=cols)
+        # return df
 
 
 class Contact(db.Model):

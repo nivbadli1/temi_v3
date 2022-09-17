@@ -40,7 +40,7 @@ def update_patient(patient_id):
         p.department = current_user.id
         p.max_calls = form.max_calls.data
         db.session.commit()
-        # flash("מטופל {} עודכן בהצלחה".format(p.f_name))
+        flash("מטופל {} עודכן בהצלחה".format(p.f_name))
         if 'patients_list' in request.form:
             print("HIHIH")
             return redirect(url_for('patients_blueprint.patients_list'))
