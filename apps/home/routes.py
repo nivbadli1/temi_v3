@@ -11,6 +11,11 @@ from flask_login import login_required
 from jinja2 import TemplateNotFound
 import json
 from apps.authentication.models import Patient,Users
+from apps.home.forms import DepartmentTimesForm
+from apps.authentication.models import UserTime
+from apps import db
+from flask import render_template, redirect, request, url_for, session, flash, jsonify
+
 
 @blueprint.route('/index')
 @login_required
@@ -42,6 +47,25 @@ def route_template(template):
     except:
         return render_template('home/page-500.html'), 500
 # Helper - Extract current page name from request
+
+@blueprint.route('/new_profile.html', methods=['GET', 'POST'])
+@login_required
+def route_profile_page():
+    # department_form = DepartmentTimesForm()
+    departments_times = UserTime.query.all()
+    return render_template('home/new_profile.html', departments_times=departments_times)
+
+
+@blueprint.route('/delete_department_time_id/<int:department_time_id>', methods=['GET', 'POST'])
+@login_required
+def delete_department_time(department_time_id):
+    time_to_delete = UserTime.query.get(department_time_id)
+    db.session.delete(time_to_delete)
+    db.session.commit()
+
+    return redirect(url_for('home_blueprint.route_profile_page'))
+
+
 
 
 def get_segment(request):
