@@ -7,7 +7,7 @@ import uuid
 import sys
 from datetime import datetime,timedelta,date as dt
 
-def get_free_slots(days:int,object):
+
 
 
 
