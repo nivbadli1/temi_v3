@@ -132,7 +132,7 @@ class SchedulerEvents():
             print(dept_num)
             try:
                 d = Department(dept_num)
-                # d.generate_events()
+                d.generate_events()
             except Exception as e:
                 print("Error in generate_events for department:{}".format(dept_num), e)
             continue
