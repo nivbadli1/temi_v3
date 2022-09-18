@@ -33,7 +33,12 @@ class Department:
         self.next_department_events = self.get_next_events(filter_by={'department_id': self.department_id, 'status': 2})
 
         # Set free slots of department
-        self.department_free_slots_df = self.get_free_slots(Users, filter_by={'department_id': self.department_id})
+        try:
+            self.department_free_slots_df = self.get_free_slots(Users, filter_by={'department_id': self.department_id})
+        except Exception as e:
+            raise Exception(e)
+
+
 
         self.department_free_slots_list = None
 
@@ -114,5 +119,24 @@ class Department:
                 print("Contact have no optional meet time")
 
 
-d = Department(1)
-d.generate_events()
+class SchedulerEvents():
+    def __init__(self,session=None):
+        if not session:
+            self.engine = U.get_engine()
+            self.session = U.get_session(self.engine)
+        pass
+
+    def run(self):
+        # departments = U.get_df(Users, self.session)
+        for dept_num in [2,3,4]:
+            print(dept_num)
+            try:
+                d = Department(dept_num)
+                # d.generate_events()
+            except Exception as e:
+                print("Error in generate_events for department:{}".format(dept_num), e)
+            continue
+
+if __name__ == '__main__':
+    scheduler = SchedulerEvents().run()
+
