@@ -127,8 +127,8 @@ class SchedulerEvents():
         pass
 
     def run(self):
-        # departments = U.get_df(Users, self.session)
-        for dept_num in [2,3,4]:
+        departments = U.get_df(Users, self.session)
+        for dept_num in departments.index.tolist():
             print(dept_num)
             try:
                 d = Department(dept_num)
@@ -136,7 +136,4 @@ class SchedulerEvents():
             except Exception as e:
                 print("Error in generate_events for department:{}".format(dept_num), e)
             continue
-
-if __name__ == '__main__':
-    scheduler = SchedulerEvents().run()
 
