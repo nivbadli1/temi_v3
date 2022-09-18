@@ -4,6 +4,8 @@ import logging
 # from crontab import CronTab
 from flask import app, jsonify
 
+from apps import config
+import os
 # Internal Modules imports:
 from apps.authentication.models import Event, Patient, Contact
 
@@ -17,6 +19,7 @@ from sqlalchemy.orm import Session
 
 
 #  Global Configuration For Class:
+
 e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
 engine = create_engine(e)
 session = Session(engine)
@@ -107,7 +110,7 @@ def get_available_slots(day):
 # Get a full slots list and remove occupied slots, return a list
 def remove_occupied_slots(slots_list, day):
     # Create a set of the same day events
-    gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
+    gc = GoogleCalendar(credentials_path= config.Config.basedir + os.path.join('\events\credentials.json'))
     today_events_timestamps = []
     for event in gc.get_events(day, day + datetime.timedelta(days=1)):
         today_events_timestamps.append(event.start.strftime("%H:%M"))
@@ -155,7 +158,7 @@ def generate_json():
 
 # Generate new Google Calendar Event (Step 1.1)
 def add_new_google_calendar_event(start_time, patient_name, contact_name):
-    gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
+    gc = GoogleCalendar(credentials_path= config.Config.basedir + os.path.join('\events\credentials.json'))
     event_template = generate_json()
     # Format the Template JSON
     new_start_time = start_time.isoformat() + "+03:00"
@@ -247,7 +250,7 @@ def set_event_as_deleted(event_id):
 
 # Get Event ID and delete event from Google Calendar (Step 2.1)
 def delete_calendar_event(event_id):
-    gc = GoogleCalendar(credentials_path='apps/events/credentials.json')
+    gc = GoogleCalendar(credentials_path=config.Config.basedir + os.path.join('\events\credentials.json'))
     event_to_be_deleted = gc.get_event(event_id)
     gc.delete_event(event_to_be_deleted)
     print("Event deleted from calendar successfully")

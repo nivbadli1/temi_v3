@@ -22,9 +22,7 @@ DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 get_config_mode = 'Debug' if DEBUG else 'Production'
 
 
-
-    # print('hi')
-
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 
