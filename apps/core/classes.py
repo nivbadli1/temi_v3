@@ -49,6 +49,7 @@ class Department:
         events = U.get_df(Event, self.session, filter_by)
         return events
 
+
     def get_patients_for_dept(self):
         """
         The function get all the patients of the department and their contacts
@@ -96,6 +97,23 @@ class Department:
                 return contact_time
         return False
 
+    def get_next_events_for_patient(self,patient_id):
+        """
+        The function return next event for a patient
+        """
+        return self.get_next_events(filter_by={'patient_id': patient_id,"status":0})
+
+    def check_patients_max_calls(self,patient_id):
+        """
+        The function return true if patient need more event and false if patient have maximum events
+        """
+        max_calls = self.patients.loc[self.patients['patient_id'] == patient_id, ['max_calls']].values[0][0]
+        events = self.get_next_events_for_patient(patient_id)
+        num_of_next_events = self.get_next_events_for_patient(patient_id).shape[1]
+        if(num_of_next_events) < max_calls:
+            return (1,max_calls)
+        else: return (0,max_calls)
+
     def generate_events(self):
         self.set_department_free_slots_list()
         patients = self.patients
@@ -103,20 +121,23 @@ class Department:
         The function get department and return events for the next 7 days for each contact of patients in department
         """
         for patient_id, row in patients.iterrows():
+            check_max_calls = self.check_patients_max_calls(row['patient_id'])
+            if(check_max_calls[0] == 1):
+                contact_id = patients.loc[patient_id, ["contact_id"]][0]
+                time = self.get_contact_availability(contact_id)
 
-            contact_id = patients.loc[patient_id, ["contact_id"]][0]
-            time = self.get_contact_availability(contact_id)
-
-            if (time):
-                print("Patient id: ", row['patient_id'], " contact_id: ", contact_id, "time:", time)
-                self.department_free_slots_list.remove(time)
-                try:
-                    E.create_new_event(time, row['patient_id'], contact_id)
-                except Exception as e:
-                    # raise Exception("Error in create_event", e)
-                    pass
+                if (time):
+                    print("Patient id: ", row['patient_id'], " contact_id: ", contact_id, "time:", time)
+                    self.department_free_slots_list.remove(time)
+                    try:
+                        E.create_new_event(time, row['patient_id'], contact_id)
+                    except Exception as e:
+                        # raise Exception("Error in create_event", e)
+                        pass
+                else:
+                    print("Contact have no optional meet time")
             else:
-                print("Contact have no optional meet time")
+                print("Patient {} no need more events, num of next events is:{} ".format(row['patient_id'],check_max_calls[1]))
 
 
 class SchedulerEvents():
@@ -136,4 +157,3 @@ class SchedulerEvents():
             except Exception as e:
                 print("Error in generate_events for department:{}".format(dept_num), e)
             continue
-
