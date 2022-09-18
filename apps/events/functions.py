@@ -1,12 +1,11 @@
 # External Modules Imports:
 import datetime
 import logging
-from crontab import CronTab
+# from crontab import CronTab
 from flask import app, jsonify
 
 # Internal Modules imports:
 from apps.authentication.models import Event, Patient, Contact
-from apps.events.functs import generate_json
 
 # Google Calendar Imports:
 from gcsa.google_calendar import GoogleCalendar
@@ -122,6 +121,37 @@ def remove_occupied_slots(slots_list, day):
 # Step 1.1 - Generate Google Calendar new event
 # Step 1.2 - Add new Event record to db
 # Step 1.3 - TBD, add new event to crond job with location and URI
+def generate_json():
+    event = {
+        'summary': '',
+        'location': '',
+        'description': '',
+        'start': {
+            'dateTime': '2022-09-11T08:00:00+03:00',
+        },
+        'end': {
+            'dateTime': '2022-09-11T11:00:00+03:00',
+        },
+        'attendees': [
+            {'email': 'lpage@example.com'},
+        ],
+        "conferenceData": {
+            "createRequest": {
+                "conferenceSolutionKey": {
+                    "type": "hangoutsMeet"
+                },
+                "requestId": "RandomString"
+            }
+        },
+        'reminders': {
+            'useDefault': False,
+            'overrides': [
+                {'method': 'email', 'minutes': 24 * 60},
+                {'method': 'popup', 'minutes': 10},
+            ],
+        },
+    }
+    return event
 
 # Generate new Google Calendar Event (Step 1.1)
 def add_new_google_calendar_event(start_time, patient_name, contact_name):
@@ -149,32 +179,37 @@ def add_new_google_calendar_event(start_time, patient_name, contact_name):
 
 
 # Add new event record to DB (Step 1.2)
-def add_event_to_db(event, patient_id, contact_id):
+def add_event_to_db(event, patient_id, contact_id,department_id=None):
     print("Adding event...")
+
     db_event = Event(url=event['hangoutLink'], event_id=event['id'], start_time=event['start']['dateTime'].split()[0],
                      status=0, patient_id=patient_id, contact_id=contact_id)
+    if(department_id):
+        Event.department_id = department_id
     session.add(db_event)
     session.commit()
     print("Event added to db successfully!")
     return True
 
 
-def create_new_crond(location, time, uri, event_id):
-    time = time.replace(second=0, microsecond=0)
-    my_cron = CronTab(user=True)
-    job = my_cron.new(command='echo hello_world_func', comment=event_id)
-    job.minute.on(time.minute)
-    job.hour.on(time.hour)
-    job.day.on(time.day)
-    job.month.on(time.month)
-    my_cron.write()
+# def create_new_crond(location, time, uri, event_id):
+#     time = time.replace(second=0, microsecond=0)
+#     my_cron = CronTab(user=True)
+#     job = my_cron.new(command='echo hello_world_func', comment=event_id)
+#     job.minute.on(time.minute)
+#     job.hour.on(time.hour)
+#     job.day.on(time.day)
+#     job.month.on(time.month)
+#     my_cron.write()
 
 # Main function, get the minimal 3 parameters and generate new Event (Steps 1.0)
 def create_new_event(start, patient_id, contact_id):
     # Create a Google calendar event
     # should also take the p name and c name to do a beautiful title
     contact_name = session.query(Contact.f_name).filter(Contact.contact_id == contact_id).first()[0]
-    patient_name = session.query(Patient.f_name).filter(Patient.patient_id == patient_id).first()[0]
+    patient = session.query(Patient).filter_by(patient_id = patient_id).first()
+    department_id = patient.department_id
+    patient_name = patient.f_name
     print("P: {} {}, C: {} {}", patient_name, patient_id, contact_name, contact_id)
     event = add_new_google_calendar_event(start, patient_name, contact_name)
 
@@ -189,7 +224,7 @@ def create_new_event(start, patient_id, contact_id):
     # start.isoformat
     location = "BED_12"
     # Add crony task:
-    create_new_crond(location, start, event['hangoutLink'], event['id'])
+    # create_new_crond(location, start, event['hangoutLink'], event['id'])
 
     print("Im done!!! ")
 
@@ -218,10 +253,10 @@ def delete_calendar_event(event_id):
     print("Event deleted from calendar successfully")
 
 
-def delete_job(event_id):
-    cron = CronTab(user=True)
-    cron.remove_all(comment=event_id)
-    cron.write()
+# def delete_job(event_id):
+#     cron = CronTab(user=True)
+#     cron.remove_all(comment=event_id)
+#     cron.write()
 
 
 # Get Event ID from UI and run delete flow (Step 2.0)
@@ -233,6 +268,8 @@ def delete_event_func(event_id):
     set_event_as_deleted(event_id)
 
     # Delete task from chrony
-    delete_job(event_id)
+    # delete_job(event_id)
 
     print("Event deleted from whole system successfully")
+
+

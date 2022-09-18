@@ -44,6 +44,9 @@ class Users(db.Model, UserMixin):
         return str(self.username)
 
 
+
+
+
 class Patient(db.Model):
     __tablename__ = "patients"
 
