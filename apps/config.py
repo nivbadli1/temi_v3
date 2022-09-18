@@ -18,7 +18,12 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
 
     # Assets Management
-    ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets')    
+    ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets')
+
+    # Remove unnecessary http prints in log
+    import logging
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
     
 class ProductionConfig(Config):
     DEBUG = False
@@ -40,6 +45,8 @@ class ProductionConfig(Config):
 
 class DebugConfig(Config):
     DEBUG = True
+    # Optional Debug Preferences
+    # EXPLAIN_TEMPLATE_LOADING = True
 
 
 # Load all possible configurations

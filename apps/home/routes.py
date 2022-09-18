@@ -51,9 +51,9 @@ def route_template(template):
 @blueprint.route('/new_profile.html', methods=['GET', 'POST'])
 @login_required
 def route_profile_page():
-    # department_form = DepartmentTimesForm()
+    department_form = DepartmentTimesForm()
     departments_times = UserTime.query.all()
-    return render_template('home/new_profile.html', departments_times=departments_times)
+    return render_template('home/new_profile.html', departments_times=departments_times, department_form=department_form)
 
 
 @blueprint.route('/delete_department_time_id/<int:department_time_id>', methods=['GET', 'POST'])
@@ -62,6 +62,26 @@ def delete_department_time(department_time_id):
     time_to_delete = UserTime.query.get(department_time_id)
     db.session.delete(time_to_delete)
     db.session.commit()
+
+    return redirect(url_for('home_blueprint.route_profile_page'))
+
+
+@blueprint.route('/add_department_time', methods=['GET', 'POST'])
+@login_required
+def add_department_time(department_time_id):
+    department_form = DepartmentTimesForm()
+
+    # Get form from UI and add new event
+    if request.method == 'POST':
+        time_format = '%Y-%m-%d %H:%M'
+        # day_chosen = datetime.datetime.strptime(timestamp, time_format)
+        # create_new_event()
+        return redirect(url_for('home_blueprint.route_profile_page'))
+
+    # Generate the New Department Time Form:
+    # if request.method == 'Get':
+    #     return redirect(url_for('home_blueprint.route_profile_page', department_form=department_form))
+
 
     return redirect(url_for('home_blueprint.route_profile_page'))
 

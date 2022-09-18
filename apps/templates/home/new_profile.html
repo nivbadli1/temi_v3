@@ -73,7 +73,10 @@
               <div class="d-flex" dir="rtl">
                 <p class="mb-0">שעות פעילות המחלקה</p>
               </div>
-             <button class="btn btn-primary btn-sm ms-auto" >הוספת שעות למחלקה</button>
+<!--             <button class="btn btn-primary btn-sm ms-auto" >הוספת שעות למחלקה</button>-->
+              <button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#add_department_time">אירוע חדש דנדש
+              </button>
+
 
             </div>
             <div class="card-body">
@@ -129,33 +132,6 @@
                                         </tr>
 
 
-                                        <!-- Edit patient modal!-->
-                                        <div id="modal_edit_patient{{ row.id }}" class="modal fade"
-                                             role="dialog">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h4 class="modal-title">עריכת מטופל</h4>
-                                                        <button type="button" class="close"
-                                                                data-dismiss="modal"
-                                                                aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-
-                                                    </div>
-                                                    <div class="modal-body">
-
-
-
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                                data-dismiss="modal">Close
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <!-- Delete patient modal!-->
                                         <div id="modal_del_time{{ row.id }}" class="modal fade" role="dialog">
                                             <div class="modal-dialog" role="document">
@@ -190,6 +166,49 @@
 
                                     </tbody>
                                 </table>
+
+      <div id="add_department_time"  class="modal fade" role="dialog" dir="rtl">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">הוספת שעון זמנים חדש למחלקה</h4>
+                </div>
+
+                <div class="modal-body" id="add_department_time_body">
+                    <form method="POST" action="{{ url_for('home_blueprint.add_department_time') }}">
+
+                        <div class="form-group">
+                            {{ department_form.day.label(class="form-control-label") }}
+                            {{ department_form.day(class="form-control", id="day_select_form") }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ department_form.from_hour.label(class="form-control-label") }}
+                            {{ department_form.from_hour(class="form-control", id="from_select_form") }}
+                        </div>
+
+
+                        <div class="form-group">
+                            {{ department_form.to_hour.label(class="form-control-label") }}
+                            {{ department_form.to_hour(class="form-control", id="to_hour_select_form") }}
+                        </div>
+
+                        <div class="form-group">
+                            <button class="btn btn-primary" type="submit">הוספת חלון זמן חדש דנדש</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
                             </div>
                         </div>
 
