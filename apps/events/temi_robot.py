@@ -8,7 +8,7 @@ from temi import Temi
 # await t.connect()
 
 async def connect_temi():
-    temi = Temi('ws://172.20.10.7:8175')
+    temi = Temi('ws://172.20.10.11:8175')
     await temi.connect()
     message = await temi.interface(url="https://meet.google.com/dsf-ciew-iyo").speak(
         sentence="Going to do a call").goto(location='spot1').run()

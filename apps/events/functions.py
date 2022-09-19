@@ -160,7 +160,7 @@ def generate_json():
 
 
 # Generate new Google Calendar Event (Step 1.1)
-def add_new_google_calendar_event(start_time, patient_name, contact_name):
+def add_new_google_calendar_event(start_time, patient_name, contact_name, contact_mail):
     gc = GoogleCalendar(credentials_path=config.Config.basedir + os.path.join('\events\credentials.json'))
     event_template = generate_json()
     # Format the Template JSON
@@ -169,9 +169,8 @@ def add_new_google_calendar_event(start_time, patient_name, contact_name):
     new_end_time = start_time + datetime.timedelta(minutes=20)
     new_end_time = new_end_time.isoformat() + "+03:00"
     event_template['end']['dateTime'] = new_end_time
-
+    event_template['attendees'][0]['email'] = contact_mail
     event_template['summary'] = "פגישה בין " + patient_name + " ל" + contact_name
-
     print("event template new details are:", event_template)
 
     # Create a real Calendar event using the gc service
@@ -212,31 +211,34 @@ def add_event_to_db(event, patient_id, contact_id, department_id=None):
 def create_new_event(start, patient_id, contact_id, send_to_robot=None):
     # Create a Google calendar event
     # should also take the p name and c name to do a beautiful title
-    contact_name = session.query(Contact.f_name).filter(Contact.contact_id == contact_id).first()[0]
+    contact = session.query(Contact).filter_by(contact_id =contact_id).first()
     patient = session.query(Patient).filter_by(patient_id=patient_id).first()
     department_id = patient.department_id
     patient_name = patient.f_name
-    print("P: {} {}, C: {} {}", patient_name, patient_id, contact_name, contact_id)
-    event = add_new_google_calendar_event(start, patient_name, contact_name)
+    contact_name = contact.f_name
+    contact_mail = contact.mail
+    print("Patient: %s" % patient_name + "patient_id: %s " % patient_id + " Contact: %s" % contact_name + " contact_id: %s" % contact_id + " contact mail: %s" % contact_mail)
+    # print("P: {} {}, C: {} {} {}", patient_name, patient_id, contact_name, contact_id)
+    event = add_new_google_calendar_event(start, patient_name, contact_name,contact_mail)
 
     # Add new event ID to our database event table
     add_event_to_db(event, patient_id, contact_id)
 
-    try:
-        async def connect_temi():
-            temi = Temi('ws://172.20.10.7:8175')
-            await temi.connect()
-            message = await temi.interface(url=event['hangoutLink']).speak(
-                sentence="Going to calling Naama").goto(location='spot1').run()
-            temi.disconnect()
-
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-        response = loop.run_until_complete(connect_temi())
-        loop.close()
-    except Exception as e:
-        pass
+    # try:
+    #     async def connect_temi():
+    #         temi = Temi('ws://172.20.10.11:8175')
+    #         await temi.connect()
+    #         message = await temi.interface(url="https://meet.google.com/kjd-hpjt-ipw").speak(
+    #             sentence="I'm going to call Dana, Ilana's granddaughter").goto(location='spot2').run()
+    #         temi.disconnect()
+    #
+    #     loop = asyncio.new_event_loop()
+    #     asyncio.set_event_loop(loop)
+    #
+    #     response = loop.run_until_complete(connect_temi())
+    #     loop.close()
+    # except Exception as e:
+    #     pass
     # assert your response
     # asyncio.get_event_loop().run_until_complete(connect_temi())
 
