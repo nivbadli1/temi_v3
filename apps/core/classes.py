@@ -3,6 +3,9 @@ import re
 import pandas as pd
 from pandas import DataFrame
 from sqlalchemy.event import Events
+import asyncio
+
+from temi import Temi
 
 from apps.authentication.models import Users, Patient, Contact, ContactTime, Event, UserTime
 from apps import db
@@ -157,3 +160,21 @@ class SchedulerEvents():
             except Exception as e:
                 print("Error in generate_events for department:{}".format(dept_num), e)
             continue
+
+
+class TemiController():
+
+    temi_ip_address = "172.20.10.7"
+
+    # t = Temi('ws://172.20.10.7:8175')
+    # await t.connect()
+
+    async def connect_temi():
+        temi = Temi('ws://172.20.10.7:8175')
+        await temi.connect()
+        message = await temi.interface(url="https://meet.google.com/dsf-ciew-iyo").speak(
+            sentence="Going to do a call").goto(location='spot1').run()
+        print(message)
+
+    if _name_ == '_main_':
+        asyncio.get_event_loop().run_until_complete(connect_temi())

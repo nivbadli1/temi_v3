@@ -43,7 +43,6 @@ def update_patient(patient_id):
         db.session.commit()
         flash("מטופל {} עודכן בהצלחה".format(p.f_name))
         if 'patients_list' in request.form:
-            print("HIHIH")
             return redirect(url_for('patients_blueprint.patients_list'))
     # If request.method == 'GET' get patient information
     elif request.method == 'GET':

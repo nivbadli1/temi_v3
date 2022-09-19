@@ -49,14 +49,20 @@ def generate_json_patients():
 @login_required
 def add_new_event_popup():
     add_new_event_form = AddNewEventForm()
+    time_format = '%Y-%m-%d %H:%M'
 
+    send_to_robot = None
     # Get form from UI and add new event
     if request.method == 'POST':
-        timestamp = add_new_event_form.data['day'] + ' ' + add_new_event_form.data['time']
-        time_format = '%Y-%m-%d %H:%M'
-        day_chosen = datetime.datetime.strptime(timestamp, time_format)
+        if 'event_for_now' in request.form:
+            day_chosen = datetime.datetime.strptime(datetime.datetime.now().strftime(time_format), time_format)
+            send_to_robot=True
+        else:
+            timestamp = add_new_event_form.data['day'] + ' ' + add_new_event_form.data['time']
+            day_chosen = datetime.datetime.strptime(timestamp, time_format)
+
         create_new_event(patient_id=add_new_event_form.data['patient'], contact_id=add_new_event_form.data['contact'],
-                         start=day_chosen)
+                         start=day_chosen,send_to_robot=send_to_robot)
         return redirect(url_for('events_blueprint.calendar'))
 
     # Generate the New Event Form:

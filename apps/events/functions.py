@@ -1,9 +1,11 @@
 # External Modules Imports:
+import asyncio
 import datetime
 import logging
 # from crontab import CronTab
 from flask import app, jsonify
-
+from temi import Temi
+from apps.events import temi_robot
 from apps import config
 import os
 # Internal Modules imports:
@@ -16,7 +18,6 @@ from gcsa.google_calendar import GoogleCalendar
 from sqlalchemy.sql.expression import update
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-
 
 #  Global Configuration For Class:
 
@@ -76,7 +77,8 @@ def generate_days_list():
 
 # Get patient ID, return a json of contacts with ID and f_name
 def get_relevant_contacts(patient_id):
-    contacts = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.l_name, Contact.patient_id).filter_by(
+    contacts = Contact.query.with_entities(Contact.contact_id, Contact.f_name, Contact.l_name,
+                                           Contact.patient_id).filter_by(
         patient_id=patient_id)
     contactArray = []
 
@@ -110,7 +112,7 @@ def get_available_slots(day):
 # Get a full slots list and remove occupied slots, return a list
 def remove_occupied_slots(slots_list, day):
     # Create a set of the same day events
-    gc = GoogleCalendar(credentials_path= config.Config.basedir + os.path.join('\events\credentials.json'))
+    gc = GoogleCalendar(credentials_path=config.Config.basedir + os.path.join('\events\credentials.json'))
     today_events_timestamps = []
     for event in gc.get_events(day, day + datetime.timedelta(days=1)):
         today_events_timestamps.append(event.start.strftime("%H:%M"))
@@ -156,9 +158,10 @@ def generate_json():
     }
     return event
 
+
 # Generate new Google Calendar Event (Step 1.1)
 def add_new_google_calendar_event(start_time, patient_name, contact_name):
-    gc = GoogleCalendar(credentials_path= config.Config.basedir + os.path.join('\events\credentials.json'))
+    gc = GoogleCalendar(credentials_path=config.Config.basedir + os.path.join('\events\credentials.json'))
     event_template = generate_json()
     # Format the Template JSON
     new_start_time = start_time.isoformat() + "+03:00"
@@ -182,12 +185,12 @@ def add_new_google_calendar_event(start_time, patient_name, contact_name):
 
 
 # Add new event record to DB (Step 1.2)
-def add_event_to_db(event, patient_id, contact_id,department_id=None):
+def add_event_to_db(event, patient_id, contact_id, department_id=None):
     print("Adding event...")
 
     db_event = Event(url=event['hangoutLink'], event_id=event['id'], start_time=event['start']['dateTime'].split()[0],
                      status=0, patient_id=patient_id, contact_id=contact_id)
-    if(department_id):
+    if (department_id):
         Event.department_id = department_id
     session.add(db_event)
     session.commit()
@@ -206,11 +209,11 @@ def add_event_to_db(event, patient_id, contact_id,department_id=None):
 #     my_cron.write()
 
 # Main function, get the minimal 3 parameters and generate new Event (Steps 1.0)
-def create_new_event(start, patient_id, contact_id):
+def create_new_event(start, patient_id, contact_id, send_to_robot=None):
     # Create a Google calendar event
     # should also take the p name and c name to do a beautiful title
     contact_name = session.query(Contact.f_name).filter(Contact.contact_id == contact_id).first()[0]
-    patient = session.query(Patient).filter_by(patient_id = patient_id).first()
+    patient = session.query(Patient).filter_by(patient_id=patient_id).first()
     department_id = patient.department_id
     patient_name = patient.f_name
     print("P: {} {}, C: {} {}", patient_name, patient_id, contact_name, contact_id)
@@ -219,6 +222,27 @@ def create_new_event(start, patient_id, contact_id):
     # Add new event ID to our database event table
     add_event_to_db(event, patient_id, contact_id)
 
+    try:
+        async def connect_temi():
+            temi = Temi('ws://172.20.10.7:8175')
+            await temi.connect()
+            message = await temi.interface(url=event['hangoutLink']).speak(
+                sentence="Going to calling Naama").goto(location='spot1').run()
+            temi.disconnect()
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+        response = loop.run_until_complete(connect_temi())
+        loop.close()
+    except Exception as e:
+        pass
+    # assert your response
+    # asyncio.get_event_loop().run_until_complete(connect_temi())
+
+    # if (send_to_robot):
+    #     start_event_with_temi(event['hangoutLink'])
+    # temi_robot.main()
     # Need to get the robot locations and translate patient bed to robot location.
     # patient_bed = session.query(Patient.bed).filter(patient_id == patient_id).first()[0]
     # Translate Bed to Robot Location:
@@ -230,9 +254,6 @@ def create_new_event(start, patient_id, contact_id):
     # create_new_crond(location, start, event['hangoutLink'], event['id'])
 
     print("Im done!!! ")
-
-
-
 
 
 #### Delete Event Related Functions ####
@@ -274,5 +295,3 @@ def delete_event_func(event_id):
     # delete_job(event_id)
 
     print("Event deleted from whole system successfully")
-
-
