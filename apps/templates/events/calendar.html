@@ -271,7 +271,7 @@
 
 function closemodal() {
       $('#add_new_contact_modal').modal('hide');
-};
+}
 
 </script>
 
@@ -301,7 +301,7 @@ function closemodal() {
             load_first_contacts();
         });
     });
-};
+}
 
 <!-- Then, get the current selected patient and fetch his contacts -->
     function load_first_contacts () {
@@ -316,7 +316,7 @@ function closemodal() {
            contact_select.innerHTML = optionHTML_first_contact;
         });
     });
-};
+}
 
 
 <!-- First, fetch the whole patients list -->
@@ -332,7 +332,7 @@ function closemodal() {
             load_first_contacts_now();
         });
     });
-};
+}
 
 <!-- Then, get the current selected patient and fetch his contacts -->
     function load_first_contacts_now () {
@@ -347,7 +347,7 @@ function closemodal() {
            contact_select_now.innerHTML = optionHTML_first_contact;
         });
     });
-};
+}
 
 
 
@@ -364,7 +364,7 @@ function closemodal() {
            add_first_events();
         });
     });
-};
+}
 
 <!-- After the days list created, get the selected day for the first time and generate free time slots list -->
 
@@ -380,7 +380,7 @@ function closemodal() {
            times_select.innerHTML = optionHTML_slots;
         });
     });
-};
+}
 
 <!-- Now we have the patients list, the matching contact, 7 days list and free time slots for the chosen day -->
 <!-- We need to make 2 on change functions, when we change a Patient(Generate new contact list) and when we change a Day (Generate new free slot time list according to the day selected)-->

@@ -1,22 +1,14 @@
-import re
-
-import pandas as pd
-from pandas import DataFrame
-from sqlalchemy.event import Events
 import asyncio
 
 from temi import Temi
 
-from apps.authentication.models import Users, Patient, Contact, ContactTime, Event, UserTime
-from apps import db
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker, class_mapper
-from datetime import datetime as dt
-import utils as U
-from run import app_config
+import util as U
+from apps.authentication.models import Users, Patient, Contact, Event
 from apps.events import functions as E
 
+
 class Department:
+    department_free_slots_list: None
     _FREQ = 20
     _NEXT_DAYS_NUM = 30
 
@@ -41,8 +33,6 @@ class Department:
         except Exception as e:
             raise Exception(e)
 
-
-
         self.department_free_slots_list = None
 
     def get_next_events(self, filter_by=None, event_status=None):
@@ -51,7 +41,6 @@ class Department:
         """
         events = U.get_df(Event, self.session, filter_by)
         return events
-
 
     def get_patients_for_dept(self):
         """
@@ -96,26 +85,27 @@ class Department:
         # department_free_slots_list = self.department_free_slots['start_time'].tolist()
         # time_slot = self.department_free_slots_list[0]
         for contact_time in contact_free_slots:
-            if (contact_time in self.department_free_slots_list):
+            if contact_time in self.department_free_slots_list:
                 return contact_time
         return False
 
-    def get_next_events_for_patient(self,patient_id):
+    def get_next_events_for_patient(self, patient_id):
         """
         The function return next event for a patient
         """
-        return self.get_next_events(filter_by={'patient_id': patient_id,"status":0})
+        return self.get_next_events(filter_by={'patient_id': patient_id, "status": 0})
 
-    def check_patients_max_calls(self,patient_id):
+    def check_patients_max_calls(self, patient_id):
         """
         The function return true if patient need more event and false if patient have maximum events
         """
         max_calls = self.patients.loc[self.patients['patient_id'] == patient_id, ['max_calls']].values[0][0]
         events = self.get_next_events_for_patient(patient_id)
         num_of_next_events = self.get_next_events_for_patient(patient_id).shape[1]
-        if(num_of_next_events) < max_calls:
-            return (1,max_calls)
-        else: return (0,max_calls)
+        if (num_of_next_events) < max_calls:
+            return (1, max_calls)
+        else:
+            return 0, max_calls
 
     def generate_events(self):
         self.set_department_free_slots_list()
@@ -125,7 +115,7 @@ class Department:
         """
         for patient_id, row in patients.iterrows():
             check_max_calls = self.check_patients_max_calls(row['patient_id'])
-            if(check_max_calls[0] == 1):
+            if (check_max_calls[0] == 1):
                 contact_id = patients.loc[patient_id, ["contact_id"]][0]
                 time = self.get_contact_availability(contact_id)
 
@@ -140,11 +130,12 @@ class Department:
                 else:
                     print("Contact have no optional meet time")
             else:
-                print("Patient {} no need more events, num of next events is:{} ".format(row['patient_id'],check_max_calls[1]))
+                print("Patient {} no need more events, num of next events is:{} ".format(row['patient_id'],
+                                                                                         check_max_calls[1]))
 
 
 class SchedulerEvents():
-    def __init__(self,session=None):
+    def __init__(self, session=None):
         if not session:
             self.engine = U.get_engine()
             self.session = U.get_session(self.engine)
@@ -163,7 +154,6 @@ class SchedulerEvents():
 
 
 class TemiController():
-
     temi_ip_address = "172.20.10.7"
 
     # t = Temi('ws://172.20.10.7:8175')
