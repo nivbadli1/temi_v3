@@ -21,3 +21,5 @@ pymysql~=1.0.2
 numpy~=1.23.1
 pytz~=2022.2.1
 alembic~=1.8.1
+temi~=0.0.2
+apscheduler~=3.9.1
