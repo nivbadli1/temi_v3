@@ -31,3 +31,6 @@ apps/static/assets/node_modules
 apps/static/assets/yarn.lock
 apps/static/assets/.temp
 
+apps/config.py
+apps/core/add_rows_to_db.ipynb
+app/core/dept.py

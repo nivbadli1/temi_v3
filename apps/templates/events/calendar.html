@@ -43,6 +43,13 @@
                     <div>
                         <button type="button" class="btn btn-success float-right" onclick="load_patients(); load_days();"
                                 data-toggle="modal" data-target="#add_new_event_modal">יצירת שיחה חדשה
+                                data-toggle="modal" data-target="#add_new_event_modal">תזמון שיחה עתידית
+                        </button>
+                    </div>
+
+                    <div>
+                        <button type="button" class="btn btn-success float-right" onclick="load_patients_now();"
+                                data-toggle="modal" data-target="#add_new_event_modal_for_now">יצירת שיחה מיידית
                         </button>
                     </div>
 
@@ -129,6 +136,40 @@
         </div>
     </div>
 
+    <div id="add_new_event_modal_for_now"  class="modal fade" role="dialog" dir="rtl">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">יצירת שיחה מיידית</h4>
+                </div>
+
+                <div class="modal-body" id="add_new_event_for_now_modal_body">
+                    <form method="POST"
+                          action="{{ url_for('events_blueprint.add_new_event_popup') }}">
+                        <div class="form-group">
+                            {{ add_new_event_form.patient.label(class="form-control-label") }}
+                            {{ add_new_event_form.patient(class="form-control ",id="patient_select_form_now") }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ add_new_event_form.contact.label(class="form-control-label") }}
+                            {{ add_new_event_form.contact(class="form-control",id="contact_select_form_now") }}
+                        </div>
+
+
+                        <div class="form-group">
+                            <button name ='event_for_now' class="btn btn-primary" type="submit">התקשר</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!--Edit Event Modal-->
     <div id="add_new_contact_modal" class="modal" role="dialog" dir="rtl">
@@ -177,7 +218,7 @@
 
 function closemodal() {
       $('#add_new_contact_modal').modal('hide');
-};
+}
 
 </script>
 
@@ -185,9 +226,14 @@ function closemodal() {
 
 <!-- 4 selectors for the 4 elements in Add New Event form (Patient, Contact, Day and Time slot)-->
     var patient_select = document.getElementById("patient_select_form");
+
     var contact_select = document.getElementById("contact_select_form");
+
     var days_select = document.getElementById("days_select_form");
     var times_select = document.getElementById("times_select_form");
+
+    var patient_select_now = document.getElementById("patient_select_form_now");
+    var contact_select_now = document.getElementById("contact_select_form_now");
 
 <!-- First, fetch the whole patients list -->
     function load_patients() {
@@ -202,7 +248,7 @@ function closemodal() {
             load_first_contacts();
         });
     });
-};
+}
 
 <!-- Then, get the current selected patient and fetch his contacts -->
     function load_first_contacts () {
@@ -217,7 +263,40 @@ function closemodal() {
            contact_select.innerHTML = optionHTML_first_contact;
         });
     });
-};
+}
+
+
+<!-- First, fetch the whole patients list -->
+    function load_patients_now() {
+    fetch('/events/patients_list').then(function(response) {
+        response.json().then(function(data) {
+           console.table(data);
+           let optionHTML_patients = '';
+           for (let patient of data.patients) {
+                    optionHTML_patients += '<option value="' + patient.id + '">' + patient.f_name + ' ' + patient.l_name + '</option>';
+                }
+           patient_select_now.innerHTML = optionHTML_patients;
+            load_first_contacts_now();
+        });
+    });
+}
+
+<!-- Then, get the current selected patient and fetch his contacts -->
+    function load_first_contacts_now () {
+    var value_3 = patient_select_now.options[patient_select_now.selectedIndex].value;
+    fetch('/events/' +  value_3).then(function(response) {
+        response.json().then(function(data) {
+           console.table(data);
+           let optionHTML_first_contact = '';
+           for (let contact of data.contacts) {
+                    optionHTML_first_contact += '<option value="' + contact.id + '">' + contact.f_name + ' ' + contact.l_name +  '</option>';
+                }
+           contact_select_now.innerHTML = optionHTML_first_contact;
+        });
+    });
+}
+
+
 
 <!-- Later, load the days (show 7 days ahead but can be editable) -->
     function load_days() {
@@ -232,7 +311,7 @@ function closemodal() {
            add_first_events();
         });
     });
-};
+}
 
 <!-- After the days list created, get the selected day for the first time and generate free time slots list -->
 
@@ -248,7 +327,7 @@ function closemodal() {
            times_select.innerHTML = optionHTML_slots;
         });
     });
-};
+}
 
 <!-- Now we have the patients list, the matching contact, 7 days list and free time slots for the chosen day -->
 <!-- We need to make 2 on change functions, when we change a Patient(Generate new contact list) and when we change a Day (Generate new free slot time list according to the day selected)-->
@@ -257,6 +336,11 @@ function closemodal() {
 
     patient_select.onchange = function() {
     load_first_contacts();
+};
+
+
+    patient_select_now.onchange = function() {
+    load_first_contacts_now();
 };
 
 <!-- On Day change, fetch the current available time slots  -->

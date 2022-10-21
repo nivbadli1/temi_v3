@@ -7,12 +7,11 @@ import pandas as pd
 import numpy as np
 import uuid
 import sys
-from datetime import datetime,timedelta,date as dt
+from datetime import datetime, timedelta, date as dt
 from apps import config
 
-
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker,class_mapper
+from sqlalchemy.orm import sessionmaker, class_mapper
 from run import app_config
 
 
@@ -47,7 +46,8 @@ def computed_operator(column, v):
     """ default __eq__ """
     return column.__eq__(v)
 
-def get_filter_statment(cls, filter_by=None):
+
+def get_filter_statement(cls, filter_by=None):
     """
     The function get filter_by dict and return a filter statement
     """
@@ -60,12 +60,12 @@ def get_filter_statment(cls, filter_by=None):
     return filters
 
 
-def get_df(cls,session, filter_by=None):
+def get_df(cls, session, filter_by=None):
     """ The function get cls to query and can also get filter_dict with column and values to filter and return dataframe of the class"""
     # SQLAlCHEMY ORM QUERY TO FETCH ALL RECORDS
     sql = session.query(cls).statement
     if (filter_by):
-        sql = session.query(cls).filter(*get_filter_statment(cls,filter_by)).statement
+        sql = session.query(cls).filter(*get_filter_statement(cls, filter_by)).statement
     df = pd.read_sql_query(
         sql=sql,
         con=session.bind,
@@ -90,9 +90,11 @@ def get_session(engine):
     session = Session()
     return session
 
+
 # # The function get start end and freq and return pd_data range
-def get_date_range(start,end,freq):
-    return pd.date_range(start=start,end=end,freq=freq)
+def get_date_range(start, end, freq):
+    return pd.date_range(start=start, end=end, freq=freq)
+
 
 def transform_time_df(df, next_days_num):
     """
@@ -112,9 +114,11 @@ def weeks_day_to_israeli_days(lst):
     """
     The function get lst and return the israeli days number for given
     """
-    israeli_days = {"0":1,"1":2,"2":3,"3":4,"4":5,"5":6,"6":7}
+    israeli_days = {"0": 1, "1": 2, "2": 3, "3": 4, "4": 5, "5": 6, "6": 7}
     return [israeli_days[str(i)] for i in lst]
-def convert_time_cols_to_time_delta(df,cols):
+
+
+def convert_time_cols_to_time_delta(df, cols):
     """
     :param df: df to convert cols
     :param cols: cols list names to convert
@@ -122,7 +126,8 @@ def convert_time_cols_to_time_delta(df,cols):
     """
     for col in cols:
         df[col] = pd.to_timedelta(df[col].astype(str))
-    return  df
+    return df
+
 
 # The function get days num and return  dataframe with num israeli day and the date for next days
 def get_next_days_dates(next_days_num):
@@ -132,15 +137,16 @@ def get_next_days_dates(next_days_num):
     """
     df = pd.DataFrame()
     # Get next 7 forroword days as dates
-    df["next_week_date"] = pd.date_range(start=dt.today(),periods=next_days_num)
+    df["next_week_date"] = pd.date_range(start=dt.today(), periods=next_days_num)
 
     # Get next 7 days as week day
-    df["next_week_day"] = pd.date_range(start=dt.today(),periods=next_days_num).strftime("%w")
+    df["next_week_day"] = pd.date_range(start=dt.today(), periods=next_days_num).strftime("%w")
 
     # Convert day as israeli days number
     df["day"] = weeks_day_to_israeli_days(df["next_week_day"])
     # print(df)
     return df.drop(columns=['next_week_day'])
+
 
 def get_df_time_slots(df_time, freq=None, next_days_num=None):
     """

@@ -295,7 +295,7 @@ module.exports = function (options, source) {
 	     * Local polyfil of Object.create
 	     */
 	    var create = Object.create || (function () {
-	        function F() {};
+	        function F() {}
 
 	        return function (obj) {
 	            var subtype;
@@ -10971,7 +10971,7 @@ function _normalizeEncoding(enc) {
         retried = true;
     }
   }
-};
+}
 
 // Do not cache `Buffer.isEncoding` when checking encoding names as some
 // modules monkey-patch it to support additional encodings
@@ -20731,7 +20731,7 @@ var Break = function Break(position, required) {
   this.required = required;
 };
 
-;
+
 
 var LineBreaker = /*#__PURE__*/function () {
   function LineBreaker(string) {
@@ -20861,7 +20861,7 @@ var LineBreaker = /*#__PURE__*/function () {
   return LineBreaker;
 }();
 
-;
+
 module.exports = LineBreaker;
 
 /***/ }),
@@ -23295,7 +23295,7 @@ var PDFNameTree = /*#__PURE__*/function () {
       if (sortedKeys.length > 1) {
         var first = sortedKeys[0],
             last = sortedKeys[sortedKeys.length - 1];
-        out.push("  /Limits ".concat(PDFObject.convert([new String(first), new String(last)])));
+        out.push("  /Limits ".concat(PDFObject.convert([String(first), String(last)])));
       }
 
       out.push('  /Names [');
@@ -23306,7 +23306,7 @@ var PDFNameTree = /*#__PURE__*/function () {
       try {
         for (var _iterator = sortedKeys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var key = _step.value;
-          out.push("    ".concat(PDFObject.convert(new String(key)), " ").concat(PDFObject.convert(this._items[key])));
+          out.push("    ".concat(PDFObject.convert(String(key)), " ").concat(PDFObject.convert(this._items[key])));
         }
       } catch (err) {
         _didIteratorError = true;
@@ -26615,8 +26615,8 @@ var EmbeddedFont = /*#__PURE__*/function (_PDFFont) {
         Subtype: 'CIDFontType0',
         BaseFont: name,
         CIDSystemInfo: {
-          Registry: new String('Adobe'),
-          Ordering: new String('Identity'),
+          Registry: String('Adobe'),
+          Ordering: String('Identity'),
           Supplement: 0
         },
         FontDescriptor: descriptor,
@@ -28207,7 +28207,7 @@ var AnnotationsMixin = {
     delete options.color;
 
     if (typeof options.Dest === 'string') {
-      options.Dest = new String(options.Dest);
+      options.Dest = String(options.Dest);
     } // Capitalize keys
 
 
@@ -28224,7 +28224,7 @@ var AnnotationsMixin = {
   note: function note(x, y, w, h, contents) {
     var options = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {};
     options.Subtype = 'Text';
-    options.Contents = new String(contents);
+    options.Contents = String(contents);
     options.Name = 'Comment';
 
     if (options.color == null) {
@@ -28238,7 +28238,7 @@ var AnnotationsMixin = {
     options.Subtype = 'Link';
     options.A = this.ref({
       S: 'GoTo',
-      D: new String(name)
+      D: String(name)
     });
     options.A.end();
     return this.annotate(x, y, w, h, options);
@@ -28264,7 +28264,7 @@ var AnnotationsMixin = {
       // Link to an external url
       options.A = this.ref({
         S: 'URI',
-        URI: new String(url)
+        URI: String(url)
       });
       options.A.end();
     }
@@ -28282,7 +28282,7 @@ var AnnotationsMixin = {
         y2 = _this$_convertRect2[3];
 
     options.QuadPoints = [x1, y2, x2, y2, x1, y1, x2, y1];
-    options.Contents = new String();
+    options.Contents = String();
     return this.annotate(x, y, w, h, options);
   },
   highlight: function highlight(x, y, w, h) {
@@ -28308,27 +28308,27 @@ var AnnotationsMixin = {
   lineAnnotation: function lineAnnotation(x1, y1, x2, y2) {
     var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
     options.Subtype = 'Line';
-    options.Contents = new String();
+    options.Contents = String();
     options.L = [x1, this.page.height - y1, x2, this.page.height - y2];
     return this.annotate(x1, y1, x2, y2, options);
   },
   rectAnnotation: function rectAnnotation(x, y, w, h) {
     var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
     options.Subtype = 'Square';
-    options.Contents = new String();
+    options.Contents = String();
     return this.annotate(x, y, w, h, options);
   },
   ellipseAnnotation: function ellipseAnnotation(x, y, w, h) {
     var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
     options.Subtype = 'Circle';
-    options.Contents = new String();
+    options.Contents = String();
     return this.annotate(x, y, w, h, options);
   },
   textAnnotation: function textAnnotation(x, y, w, h, text) {
     var options = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {};
     options.Subtype = 'FreeText';
-    options.Contents = new String(text);
-    options.DA = new String();
+    options.Contents = String(text);
+    options.DA = String();
     return this.annotate(x, y, w, h, options);
   },
   _convertRect: function _convertRect(x1, y1, w, h) {
@@ -28375,7 +28375,7 @@ var PDFOutline = /*#__PURE__*/function () {
     }
 
     if (title !== null) {
-      this.outlineData['Title'] = new String(title);
+      this.outlineData['Title'] = String(title);
     }
 
     this.dictionary = this.document.ref(this.outlineData);
@@ -28502,7 +28502,7 @@ var AcroFormMixin = {
     var data = {
       Fields: [],
       NeedAppearances: true,
-      DA: new String("/".concat(this._font.id, " 0 Tf 0 g")),
+      DA: String("/".concat(this._font.id, " 0 Tf 0 g")),
       DR: {
         Font: {}
       }
@@ -28655,7 +28655,7 @@ var AcroFormMixin = {
     opts = this._resolveStrings(opts);
     opts = this._resolveColors(opts);
     opts = this._resolveFormat(opts);
-    opts.T = new String(name);
+    opts.T = String(name);
 
     if (opts.parent) {
       opts.Parent = opts.parent;
@@ -28721,11 +28721,11 @@ var AcroFormMixin = {
       opts.AA = opts.AA ? opts.AA : {};
       opts.AA.K = {
         S: 'JavaScript',
-        JS: new String("".concat(fnKeystroke, "(").concat(params, ");"))
+        JS: String("".concat(fnKeystroke, "(").concat(params, ");"))
       };
       opts.AA.F = {
         S: 'JavaScript',
-        JS: new String("".concat(fnFormat, "(").concat(params, ");"))
+        JS: String("".concat(fnFormat, "(").concat(params, ");"))
       };
     }
 
@@ -28802,7 +28802,7 @@ var AcroFormMixin = {
         Font: {}
       };
       options.DR.Font[this._font.id] = this._font.ref();
-      options.DA = new String("/".concat(this._font.id, " 0 Tf 0 g"));
+      options.DA = String("/".concat(this._font.id, " 0 Tf 0 g"));
     }
 
     return options;
@@ -28814,7 +28814,7 @@ var AcroFormMixin = {
       if (Array.isArray(a)) {
         for (var idx = 0; idx < a.length; idx++) {
           if (typeof a[idx] === 'string') {
-            select.push(new String(a[idx]));
+            select.push(String(a[idx]));
           } else {
             select.push(a[idx]);
           }
@@ -28842,17 +28842,17 @@ var AcroFormMixin = {
     });
     ['V', 'DV'].forEach(function (key) {
       if (typeof options[key] === 'string') {
-        options[key] = new String(options[key]);
+        options[key] = String(options[key]);
       }
     });
 
     if (options.MK && options.MK.CA) {
-      options.MK.CA = new String(options.MK.CA);
+      options.MK.CA = String(options.MK.CA);
     }
 
     if (options.label) {
       options.MK = options.MK ? options.MK : {};
-      options.MK.CA = new String(options.label);
+      options.MK.CA = String(options.label);
       delete options.label;
     }
 
@@ -29078,7 +29078,7 @@ var PDFDocument = /*#__PURE__*/function (_stream$Readable) {
       }
 
       var data = {
-        JS: new String(js),
+        JS: String(js),
         S: 'JavaScript'
       };
 
@@ -29146,7 +29146,7 @@ var PDFDocument = /*#__PURE__*/function (_stream$Readable) {
         var val = this.info[key];
 
         if (typeof val === 'string') {
-          val = new String(val);
+          val = String(val);
         }
 
         var entry = this.ref(val);
@@ -30824,7 +30824,7 @@ function shouldUseNative() {
 		// Detect buggy property enumeration order in older V8 versions.
 
 		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		var test1 = String('abc');  // eslint-disable-line no-new-wrappers
 		test1[5] = 'de';
 		if (Object.getOwnPropertyNames(test1)[0] === '5') {
 			return false;
@@ -35998,7 +35998,7 @@ module.exports = function inflate_fast(strm, start) {
           }
           else if ((op & 64) === 0) {          /* 2nd level distance code */
             here = dcode[(here & 0xffff)/*here.val*/ + (hold & ((1 << op) - 1))];
-            continue dodist;
+            continue;
           }
           else {
             strm.msg = 'invalid distance code';
@@ -36011,7 +36011,7 @@ module.exports = function inflate_fast(strm, start) {
       }
       else if ((op & 64) === 0) {              /* 2nd level length code */
         here = lcode[(here & 0xffff)/*here.val*/ + (hold & ((1 << op) - 1))];
-        continue dolen;
+        continue;
       }
       else if (op & 32) {                     /* end-of-block */
         //Tracevv((stderr, "inflate:         end of block\n"));
@@ -36041,7 +36041,7 @@ module.exports = function inflate_fast(strm, start) {
   strm.avail_out = (_out < end ? 257 + (end - _out) : 257 - (_out - end));
   state.hold = hold;
   state.bits = bits;
-  return;
+
 };
 
 
@@ -37085,7 +37085,7 @@ module.exports = {
 	                var lane = state[0];
 	                var roundConstant = ROUND_CONSTANTS[round];
 	                lane.high ^= roundConstant.high;
-	                lane.low  ^= roundConstant.low;;
+	                lane.low  ^= roundConstant.low;
 	            }
 	        },
 
@@ -39778,7 +39778,7 @@ fontkit.open = function (filename, postscriptName, callback) {
     return callback(null, font);
   });
 
-  return;
+
 };
 
 fontkit.create = function (buffer, postscriptName) {
@@ -39836,7 +39836,7 @@ function cache(target, key, descriptor) {
           var result = fn.apply(this, args);
           cache.set(key, result);
           return result;
-        };
+        }
 
         _Object$defineProperty(this, key, { value: memoized });
         return memoized;
@@ -40665,7 +40665,7 @@ var CFFIndex = function () {
       type.encode(stream, _item, parent);
     }
 
-    return;
+
   };
 
   return CFFIndex;
@@ -41043,7 +41043,7 @@ var CFFDict = function () {
       ptr.type.encode(stream, ptr.val, ptr.parent);
     }
 
-    return;
+
   };
 
   return CFFDict;
@@ -44165,7 +44165,7 @@ var UnicodeLayoutEngine = function () {
       }
     }
 
-    return;
+
   };
 
   UnicodeLayoutEngine.prototype.getCombiningClass = function getCombiningClass(codePoint) {
@@ -51154,7 +51154,7 @@ var TTFGlyph = function (_Glyph) {
       glyph.phantomPoints = points.slice(-4);
     }
 
-    return;
+
   };
 
   TTFGlyph.prototype._decodeComposite = function _decodeComposite(glyph, stream) {
@@ -52166,7 +52166,7 @@ var COLRGlyph = function (_Glyph) {
       glyph.render(ctx, size);
     }
 
-    return;
+
   };
 
   _createClass(COLRGlyph, [{
@@ -53201,7 +53201,7 @@ var CFFSubset = function (_Subset) {
       }
     }
 
-    return;
+
   };
 
   CFFSubset.prototype.createCIDFontdict = function createCIDFontdict(topDict) {
@@ -55664,7 +55664,7 @@ exports.utf7 = Utf7Codec;
 exports.unicode11utf7 = 'utf7'; // Alias UNICODE-1-1-UTF-7
 function Utf7Codec(codecOptions, iconv) {
     this.iconv = iconv;
-};
+}
 
 Utf7Codec.prototype.encoder = Utf7Encoder;
 Utf7Codec.prototype.decoder = Utf7Decoder;
@@ -55788,7 +55788,7 @@ Utf7Decoder.prototype.end = function() {
 exports.utf7imap = Utf7IMAPCodec;
 function Utf7IMAPCodec(codecOptions, iconv) {
     this.iconv = iconv;
-};
+}
 
 Utf7IMAPCodec.prototype.encoder = Utf7IMAPEncoder;
 Utf7IMAPCodec.prototype.decoder = Utf7IMAPDecoder;
@@ -62346,22 +62346,22 @@ clone.clonePrototype = function clonePrototype(parent) {
 
 function __objToStr(o) {
   return Object.prototype.toString.call(o);
-};
+}
 clone.__objToStr = __objToStr;
 
 function __isDate(o) {
   return typeof o === 'object' && __objToStr(o) === '[object Date]';
-};
+}
 clone.__isDate = __isDate;
 
 function __isArray(o) {
   return typeof o === 'object' && __objToStr(o) === '[object Array]';
-};
+}
 clone.__isArray = __isArray;
 
 function __isRegExp(o) {
   return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
-};
+}
 clone.__isRegExp = __isRegExp;
 
 function __getRegExpFlags(re) {
@@ -62370,7 +62370,7 @@ function __getRegExpFlags(re) {
   if (re.ignoreCase) flags += 'i';
   if (re.multiline) flags += 'm';
   return flags;
-};
+}
 clone.__getRegExpFlags = __getRegExpFlags;
 
 return clone;
@@ -62927,7 +62927,7 @@ BrotliBitReader.prototype.reset = function() {
 */
 BrotliBitReader.prototype.readMoreInput = function() {
   if (this.bit_end_pos_ > 256) {
-    return;
+
   } else if (this.eos_) {
     if (this.bit_pos_ > this.bit_end_pos_)
       throw new Error('Unexpected end of input ' + this.bit_pos_ + ' ' + this.bit_end_pos_);
@@ -69760,7 +69760,7 @@ var SVGtoPDF = function SVGtoPDF(doc, svg, x, y, options) {
       Border: [0, 0, 0],
       A: {
         S: 'URI',
-        URI: new String(url)
+        URI: String(url)
       }
     });
     ref.end();
@@ -69920,7 +69920,7 @@ var SVGtoPDF = function SVGtoPDF(doc, svg, x, y, options) {
     return result;
   }
 
-  ;
+
 
   function decodeEntities(str) {
     return str.replace(/&(?:#([0-9]+)|#[xX]([0-9A-Fa-f]+)|([0-9A-Za-z]+));/g, function (mt, m0, m1, m2) {
