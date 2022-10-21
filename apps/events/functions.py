@@ -112,7 +112,7 @@ def get_available_slots(day):
 # Get a full slots list and remove occupied slots, return a list
 def remove_occupied_slots(slots_list, day):
     # Create a set of the same day events
-    gc = GoogleCalendar(credentials_path=config.Config.basedir + os.path.join('\events\credentials.json'))
+    gc = GoogleCalendar(credentials_path=config.Config.basedir + os.path.join('/events/credentials.json'))
     today_events_timestamps = []
     for event in gc.get_events(day, day + datetime.timedelta(days=1)):
         today_events_timestamps.append(event.start.strftime("%H:%M"))
