@@ -23,3 +23,7 @@ pytz~=2022.2.1
 alembic~=1.8.1
 temi~=0.0.2
 apscheduler~=3.9.1
+openpyxl==3.0.10
+plotly==4.14.3
+pandas==1.4.3
+streamlit==1.12.0

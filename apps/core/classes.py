@@ -3,7 +3,7 @@ import asyncio
 from temi import Temi
 
 import util as U
-from apps.authentication.models import Users, Patient, Contact, Event
+from apps.authentication.models import Users, Patient, Contact, Event,UserTime
 from apps.events import functions as E
 
 
@@ -29,6 +29,7 @@ class Department:
 
         # Set free slots of department
         try:
+            print("Getting free slots of department")
             self.department_free_slots_df = self.get_free_slots(Users, filter_by={'department_id': self.department_id})
         except Exception as e:
             raise Exception(e)
@@ -153,18 +154,20 @@ class SchedulerEvents():
             continue
 
 
-class TemiController():
-    temi_ip_address = "172.20.10.7"
-
-    # t = Temi('ws://172.20.10.7:8175')
-    # await t.connect()
-
-    async def connect_temi():
-        temi = Temi('ws://172.20.10.7:8175')
-        await temi.connect()
-        message = await temi.interface(url="https://meet.google.com/dsf-ciew-iyo").speak(
-            sentence="Going to do a call").goto(location='spot1').run()
-        print(message)
-
-    if _name_ == '_main_':
-        asyncio.get_event_loop().run_until_complete(connect_temi())
+# class TemiController():
+#     temi_ip_address = "172.20.10.7"
+#
+#     # t = Temi('ws://172.20.10.7:8175')
+#     # await t.connect()
+#
+#     async def connect_temi():
+#         temi = Temi('ws://172.20.10.7:8175')
+#         await temi.connect()
+#         message = await temi.interface(url="https://meet.google.com/dsf-ciew-iyo").speak(
+#             sentence="Going to do a call").goto(location='spot1').run()
+#         print(message)
+#
+#     if _name_ == '_main_':
+#         asyncio.get_event_loop().run_until_complete(connect_temi())
+# from apps.core.classes import Department
+# d = Department(2)
