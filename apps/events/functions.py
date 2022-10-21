@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 
 #  Global Configuration For Class:
 
-e = 'mysql+pymysql://naya:NayaPass1!@35.226.141.122/temi_v3'
+e = 'mysql+pymysql://naya:NayaPass1!@35.193.190.203/temi_v3'
 engine = create_engine(e)
 session = Session(engine)
 DAYS_TO_SHOW_IN_EVENTS = 7
