@@ -1,0 +1,15 @@
+[id^=modal]{
+  display: none;
+}
+
+#modal1:target {
+  display: block;
+}
+
+#modal2:target {
+  display: block;
+}
+
+[id^=_new] a {
+  float: right;
+}

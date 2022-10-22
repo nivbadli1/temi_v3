@@ -12,7 +12,7 @@ async def connect_temi():
     message = await temi.interface(url="https://meet.google.com/dsf-ciew-iyo").speak(sentence="Going to do a call").goto(location='spot1').run()
     print(message)
 if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(connect_temi())
-
+    # asyncio.get_event_loop().run_until_complete(connect_temi())
+    print("hello")
 
 
