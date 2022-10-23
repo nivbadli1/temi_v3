@@ -23,7 +23,7 @@
                         <div class="card-header pb-0">
                         </div>
                         <div class="card-body">
-                            <p class="text-uppercase text-sm">פרטי המטופל</p>
+                            <p class="text-uppercase text-sm">פרטי הדייר/ת</p>
                             <div class="row">
                                 <div class="col-sm-3">
                                     <p class="mb-0">{{ patient_form.f_name.label }}</p>
@@ -82,7 +82,7 @@
 
 
                             <button data-target="#edit_patient_modal" data-toggle="modal" class="btn btn-primary btn-sm ">
-                                ערוך פרטי מטופל
+                                ערוך פרטי דייר/ת
                             </button>
 
                             <!-- Edit patient modal -->
@@ -90,7 +90,7 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h4 class="modal-title">עריכת מטופל</h4>
+                                            <h4 class="modal-title">עריכת דייר/ת</h4>
                                         </div>
                                         <div class="modal-body">
                                             <form method="POST"
@@ -128,7 +128,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">Close
+                                                    data-dismiss="modal">סגירה
                                             </button>
                                         </div>
                                     </div>
@@ -149,7 +149,7 @@
                         <div class="card-header pb-0 p-3">
                             <div class="row">
                                 <div class="col-6 d-flex align-items-center">
-                                    <h6 class="mb-0">פרטי אנשי הקשר</h6>
+                                    <h6 class="mb-0">פרטי אנשי הקשר של הדייר/ת</h6>
                                 </div>
                                 <div class="col-6 text-start">
 <!--                                <a class="btn bg-gradient-success mb-0" href="javascript:;"><i class="fas fa-plus" aria-hidden="true"></i>הוספת איש קשר חדש</a>-->
@@ -161,7 +161,7 @@
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h4 class="modal-title">הוספת איש קשר חדש חדש</h4>
+                                                            <h4 class="modal-title">הוספת איש קשר חדש</h4>
                                                         </div>
                                                         <div class="modal-body">
                                                                 <form method="POST" action="{{ url_for('patients_blueprint.add_contact',patient_id=patient.patient_id) }}">
@@ -197,7 +197,7 @@
                                                             </form>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">סגירה</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -374,7 +374,7 @@
                                              </form>
                                           </div>
                                           <div class="modal-footer">
-                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">סגירה</button>
                                           </div>
                                        </div>
                                     </div>

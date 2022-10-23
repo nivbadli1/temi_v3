@@ -18,7 +18,7 @@ class PatientForm(FlaskForm):
     patient_id = StringField('תעודת זהות', validators=[DataRequired()])
     f_name = StringField('שם פרטי', validators=[DataRequired()])
     l_name = StringField('שם משפחה', validators=[DataRequired()])
-    bed = IntegerField('מספר מיטה', validators=[DataRequired()])
+    bed = IntegerField('מיקום מיטה', validators=[DataRequired()])
     department = IntegerField('מספר מחלקה', validators=[DataRequired()])
     max_calls = IntegerField('מספר שיחות שבועיות', validators=[DataRequired()])
     select_list = SelectField('idates', validators=[DataRequired()])

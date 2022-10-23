@@ -22,7 +22,7 @@
                         <div class="card-header pb-0">
 
                             <a href="{{ url_for('patients_blueprint.add_patient') }}" ,
-                               class="btn btn-primary bg-success">הוספת מטופל חדש</a>
+                               class="btn btn-primary bg-success">הוספת דייר/ת חדש/ה</a>
                         </div>
 
                         <div class="card-body px-0 pt-0 pb-2">
@@ -34,10 +34,10 @@
                                             תעודת זהות
                                         </th>
                                         <th class="text-uppercase text-secondary text-m font-weight-bolder opacity-7 ps-2">
-                                            שם
+                                            שם הדייר/ת
                                         </th>
                                         <th class="text-center text-uppercase text-secondary text-m font-weight-bolder opacity-7">
-                                            מספר מיטה
+                                            מיקום מיטה
                                         </th>
                                         <th class="text-center text-uppercase text-secondary text-m font-weight-bolder opacity-7">
                                             מספר שיחות שבועיות
@@ -74,7 +74,7 @@
                                             <td>
                                                 <a class="btn btn-success btn-s m-0"
                                                    href="{{ url_for('patients_blueprint.patient_info',patient_id=patient.patient_id) }}"
-                                                   role="button">פרטי המטופל</a>
+                                                   role="button">פרטי הדייר/ת</a>
                                             </td>
                                             <td><a href="/update_patient/{{ patient.patient_id }}"
                                                    class="btn btn-warning btn-s m-0" data-toggle="modal"
@@ -151,7 +151,7 @@
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h4 class="modal-title">מחיקת מטופל</h4>
+                                                        <h4 class="modal-title">מחיקת דייר/ת</h4>
                                                         <button type="button" class="close"
                                                                 data-dismiss="modal"
                                                                 aria-label="Close">
@@ -162,7 +162,7 @@
                                                     <div class="modal-body text-center">
                                                         <p class="text-lg mb-0">האם את\ה בטוח\ה שברצונך למחוק את
                                                             <span class="font-weight-bolder">{{ patient.f_name }} {{ patient.l_name }}</span>
-                                                            מרשימת המטופלים?
+                                                            מרשימת הדיירים?
                                                         </p>
                                                     </div>
                                                     <div class="modal-footer">
