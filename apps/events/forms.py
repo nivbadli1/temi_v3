@@ -17,7 +17,7 @@ class EventForm(FlaskForm):
 
 
 class AddNewEventForm(FlaskForm):
-    patient = SelectField('מטופל', choices=[], validators=[DataRequired()])
-    contact = SelectField('איש קשר', choices=[], validators=[DataRequired()])
-    day = SelectField('יום', choices=[], validators=[DataRequired()])
-    time = SelectField('שעה', choices=[], validators=[DataRequired()])
+    patient = SelectField('שם דייר/ת', choices=[], validators=[DataRequired()])
+    contact = SelectField('איש קשר של הדייר/ת', choices=[], validators=[DataRequired()])
+    day = SelectField('יום השיחה', choices=[], validators=[DataRequired()])
+    time = SelectField('שעת השיחה', choices=[], validators=[DataRequired()])
