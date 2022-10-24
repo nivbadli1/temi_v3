@@ -66,8 +66,11 @@ def route_profile_page():
     for element in departments_times:
         departments_times_lists.append([d[element.day], element.from_hour.strftime("%H:%M"), element.to_hour.strftime("%H:%M"), element.id])
 
+    from flask_login import current_user, login_user
+    print("current user is: ", current_user.email, current_user.id, current_user.username)
+
     return render_template('home/new_profile.html', departments_times=departments_times,
-                           department_form=department_form, departments_times_lists=departments_times_lists)
+                           department_form=department_form, departments_times_lists=departments_times_lists, current_username=current_user.username)
 
 
 @blueprint.route('/delete_department_time_id/<int:department_time_id>', methods=['GET', 'POST'])
