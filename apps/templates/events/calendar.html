@@ -140,18 +140,18 @@
                 <div class="modal-body" id="add_new_event_for_now_modal_body">
                     <form method="POST"
                           action="{{ url_for('events_blueprint.add_new_event_popup') }}">
-                        <div class="form-group">
+                        <div class="form-group text-right">
                             {{ add_new_event_form.patient.label(class="form-control-label") }}
                             {{ add_new_event_form.patient(class="form-control ",id="patient_select_form_now") }}
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group text-right">
                             {{ add_new_event_form.contact.label(class="form-control-label") }}
                             {{ add_new_event_form.contact(class="form-control",id="contact_select_form_now") }}
                         </div>
 
 
-                        <div class="form-group">
+                        <div class="form-group text-right">
                             <button name ='event_for_now' class="btn btn-primary" type="submit">התקשר עכשיו</button>
                         </div>
                     </form>
