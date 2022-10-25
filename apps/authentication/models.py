@@ -60,13 +60,13 @@ class Patient(db.Model):
     events = db.relationship('Event', back_populates='patient', lazy='select')
     department = db.relationship('Users', back_populates='patients', lazy='select')
 
-    def __init__(self, patient_id, f_name, l_name, bed, department, max_calls):
-        self.patient_id = patient_id
-        self.f_name = f_name
-        self.l_name = l_name
-        self.bed = bed
-        self.department = department
-        self.max_calls = max_calls
+    # def __init__(self, patient_id, f_name, l_name, bed, department, max_calls):
+    #     self.patient_id = patient_id
+    #     self.f_name = f_name
+    #     self.l_name = l_name
+    #     self.bed = bed
+    #     self.department = department
+    #     self.max_calls = max_calls
 
 
     @classmethod
@@ -91,11 +91,6 @@ class Patient(db.Model):
     def __repr__(self):
         return "Patient(patient_id='%s', l_name='%s', f_name='%s', bed='%s', department='%s', max_calls='%s')" % (
             self.patient_id, self.l_name, self.f_name, self.bed, self.department, self.max_calls)
-
-    @classmethod
-    def get_df(cls) -> pd.DataFrame:
-        cols = [c.name for c in cls.__table__.columns]
-        pk = [c.name for c in cls.__table__.primary_key]
 
         # return cols,pk
         # tuplefield_list = [(getattr(item, col) for col in cols) for item in db.query(cls).all()]

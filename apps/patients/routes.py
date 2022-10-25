@@ -71,7 +71,7 @@ def add_patient():
             f_name=form.f_name.data,
             l_name=form.l_name.data,
             bed=form.bed.data,
-            department=current_user.id,
+            department_id=int(current_user.username),
             max_calls=form.max_calls.data
         )
         db.session.add(p)

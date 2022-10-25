@@ -21,8 +21,9 @@ from sqlalchemy.orm import Session
 
 #  Global Configuration For Class:
 
-e = 'mysql+pymysql://naya:NayaPass1!@35.193.190.203/temi_v3'
-engine = create_engine(e)
+# e = 'mysql+pymysql://naya:NayaPass1!@104.154.228.219/temi_v3'
+from apps.config import Config
+engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 session = Session(engine)
 DAYS_TO_SHOW_IN_EVENTS = 7
 logger = logging.getLogger(__name__)

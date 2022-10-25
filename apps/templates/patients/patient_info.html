@@ -163,7 +163,7 @@
                                                         <div class="modal-header">
                                                             <h4 class="modal-title">הוספת איש קשר חדש חדש</h4>
                                                         </div>
-                                                        <div class="modal-body">
+                                                        <div class="modal-body" dir="rtl">
                                                                 <form method="POST" action="{{ url_for('patients_blueprint.add_contact',patient_id=patient.patient_id) }}">
                                                                 <div class="form-group">
                                                                     {{ contact_form.f_name.label(class="form-control-label") }}
@@ -185,7 +185,7 @@
                                                                     {{ contact_form.mail(class="form-control" ) }}
                                                                 </div>
 
-                                                                <div class="form-group">
+                                                                <div class="form-group" dir="rtl">
                                                                     {{ contact_form.priority.label(class="form-control-label") }}
                                                                     {{ contact_form.priority(class="form-control" ) }}
                                                                 </div>
