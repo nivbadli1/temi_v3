@@ -217,7 +217,8 @@ def create_new_event(start, patient_id, contact_id, send_to_robot=None):
     patient_name = patient.f_name
     contact_name = contact.f_name
     contact_mail = contact.mail
-    print("Patient: %s" % patient_name + "patient_id: %s " % patient_id + " Contact: %s" % contact_name + " contact_id: %s" % contact_id + " contact mail: %s" % contact_mail)
+    print(
+        "Patient: %s" % patient_name + "patient_id: %s " % patient_id + " Contact: %s" % contact_name + " contact_id: %s" % contact_id + " contact mail: %s" % contact_mail)
     # print("P: {} {}, C: {} {} {}", patient_name, patient_id, contact_name, contact_id)
     event = add_new_google_calendar_event(start, patient_name, contact_name, contact_mail)
 
@@ -273,7 +274,7 @@ def set_event_as_deleted(event_id):
 
 # Get Event ID and delete event from Google Calendar (Step 2.1)
 def delete_calendar_event(event_id):
-    gc = GoogleCalendar(credentials_path=config.Config.basedir + os.path.join('\events\credentials.json'))
+    gc = GoogleCalendar(credentials_path=config.Config.basedir + os.path.join('/events/credentials.json'))
     event_to_be_deleted = gc.get_event(event_id)
     gc.delete_event(event_to_be_deleted)
     print("Event deleted from calendar successfully")
