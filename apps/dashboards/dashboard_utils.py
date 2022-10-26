@@ -36,7 +36,7 @@ def transform_events_df(df):
     df['status'] = df['status'].apply(get_events_status)
     # Transform dataframe for website
     df= df[['start_time','f_name_x','l_name_x','f_name_y','l_name_y','max_calls','status','mail','phone']]
-    df.columns = ['תאריך תחילת שיחה','שם פרטי דייר','שם משפחה דייר','שם פרטי איש קשר','שם משפחה איש קשר','מספר שיחות שבועיות','סטטוס שיחה','מייל','מספר טלפון']
+    # df.columns = ['תאריך תחילת שיחה','שם פרטי דייר','שם משפחה דייר','שם פרטי איש קשר','שם משפחה איש קשר','מספר שיחות שבועיות','סטטוס שיחה','מייל','מספר טלפון']
 
     return df
 
@@ -48,7 +48,6 @@ def get_tables():
     events = events.merge(patients, how='left', on='patient_id')
     events = events.merge(contacts, how='left', on='contact_id')
     return events
-
 
 def get_measures(session=None):
     """
