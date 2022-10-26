@@ -16,6 +16,7 @@ from apps.authentication.models import UserTime
 from apps import db
 from flask import render_template, redirect, request, url_for, session, flash, jsonify
 from sqlalchemy import desc
+import apps.dashboards.dashboard_utils as SU
 
 
 @blueprint.route('/index')
@@ -47,6 +48,7 @@ def route_template(template):
     except:
         return render_template('home/page-500.html'), 500
 
+
 @blueprint.route('/new_profile.html', methods=['GET', 'POST'])
 @login_required
 def route_profile_page():
@@ -64,13 +66,15 @@ def route_profile_page():
     })
     departments_times_lists = []
     for element in departments_times:
-        departments_times_lists.append([d[element.day], element.from_hour.strftime("%H:%M"), element.to_hour.strftime("%H:%M"), element.id])
+        departments_times_lists.append(
+            [d[element.day], element.from_hour.strftime("%H:%M"), element.to_hour.strftime("%H:%M"), element.id])
 
     from flask_login import current_user, login_user
     print("current user is: ", current_user.email, current_user.id, current_user.username)
 
     return render_template('home/new_profile.html', departments_times=departments_times,
-                           department_form=department_form, departments_times_lists=departments_times_lists, current_username=current_user.username)
+                           department_form=department_form, departments_times_lists=departments_times_lists,
+                           current_username=current_user.username)
 
 
 @blueprint.route('/delete_department_time_id/<int:department_time_id>', methods=['GET', 'POST'])
@@ -91,7 +95,8 @@ def add_department_time(department_time_id=1):
     # Get form from UI and add new event
     if request.method == 'POST':
         # if POST, we got a new department time
-        newUserTime = UserTime(from_hour=department_form.from_hour.data, to_hour=department_form.to_hour.data, day=department_form.day.data, user_id=department_time_id)
+        newUserTime = UserTime(from_hour=department_form.from_hour.data, to_hour=department_form.to_hour.data,
+                               day=department_form.day.data, user_id=department_time_id)
         db.session.add(newUserTime)
         db.session.commit()
 
@@ -103,6 +108,13 @@ def add_department_time(department_time_id=1):
     # DepartmentTimesForm
 
     return redirect(url_for('home_blueprint.route_profile_page'))
+
+
+# @blueprint.route('/index_/<int:deprtment_id>', methods=['GET', 'POST'])
+# @login_required
+# def get_measures_from_streamlit(department_time_id):
+#     measure_dict = SU.get_measures()
+#     return render_template('home/index_', measure_dict = jsonify(measure_dict))
 
 
 def get_segment(request):

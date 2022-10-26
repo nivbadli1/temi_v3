@@ -11,12 +11,50 @@ from pandas.api.types import (
     is_object_dtype,
 )
 
-_SESSION = U.get_session(engine=U.get_engine())
+def add_logo():
+    st.markdown(
+        """
+        <style>
+            [data-testid="stSidebarNav"] {
+                background-image: ./static/assets/img/logo-ct-dark2.jpeg;
+                background-repeat: no-repeat;
+                padding-top: 120px;
+                background-position: 20px 20px;
+            }
+            [data-testid="stSidebarNav"]::before {
+                content: "My Company Name";
+                margin-left: 20px;
+                margin-top: 20px;
+                font-size: 30px;
+                position: relative;
+                top: 100px;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+from PIL import Image
+import streamlit as st
+
+# You can always call this function where ever you want
 st.set_page_config(
     page_title="Real-Time Data Science Dashboard",
-    page_icon="✅",
+    page_icon="🤖 📲 ",
     layout="wide",
 )
+def add_logo(logo_path, width, height):
+    """Read and return a resized logo"""
+    logo = Image.open(logo_path)
+    modified_logo = logo.resize((width, height))
+    return modified_logo
+
+my_logo = add_logo(logo_path=r"C:\Users\User\PycharmProjects\temi_v3\apps\static\assets\img\logo-ct-dark2.jpeg", width=50, height=60)
+
+
+
+_SESSION = U.get_session(engine=U.get_engine())
+
 
 @st.experimental_memo
 def get_tables():
@@ -105,10 +143,13 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 df = get_tables()
 # df.info()
 # departments_df = U.get_df(Users, _SESSION)
-
+st.image(my_logo)
 # dashboard title
-st.title("אחיות מסך ניהול ומעקב")
+# st.title("אחיות מסך ניהול ומעקב")
+st.markdown("<h1 style='text-align: center; color: grey;'>מסך ניהול אחיות</h1>", unsafe_allow_html=True)
 
+def left_align(s, props='text-align: left;'):
+    return props
 # top-level filters
 # dept_filter = st.selectbox("בחר מספר מחלקה", pd.unique(departments_df["username"]))
 
@@ -134,30 +175,33 @@ with placeholder.container():
 
     # fill in those three columns with respective metrics or KPIs
     kpi1.metric(
-        label=" ⏳ מספר השיחות שהתקיימו בשבוע האחרון ",
+        label=" 📲 מספר השיחות שהתקיימו בשבוע האחרון ",
         value=int(measures_dict.get('last_week_events_done_count')),
-        delta=round(measures_dict.get('last_week_events_done_count')) - 7,
+
     )
 
     kpi2.metric(
-        label="מספר השיחות שהתבטלו בשבוע האחרון",
+        label=" 📵 מספר השיחות שהתבטלו בשבוע האחרון",
         value=round(measures_dict.get('last_week_events_done_count')),
-        delta=round(measures_dict.get('last_week_events_done_count')) - 7,
+
     )
 
     kpi3.metric(
-        label="מספר השיחות שממתינות לביצוע בשבוע הבא",
+        label=" 🔜 מספר השיחות שממתינות לביצוע בשבוע הבא",
         value=round(measures_dict.get('last_week_events_done_count')),
-        delta=round(measures_dict.get('last_week_events_done_count')) - 7,
+
     )
 
     kpi4.metric(
-        label="דיירים שאין להם אנשי קשר רשומים",
+        label="	👨‍👩‍👦 דיירים שאין להם אנשי קשר רשומים",
         value=round(measures_dict.get('last_week_events_done_count')),
-        delta=round(measures_dict.get('last_week_events_done_count')) - 7,
+
     )
 # st.markdown("###deprtment df")
 
     st.dataframe(filter_dataframe(display_df))
 
     df_xlsx = SU.to_excel(display_df)
+    st.download_button(label='📥 להורדת התוצאות לאקסל',
+                       data=df_xlsx,
+                       file_name='events.xlsx')
