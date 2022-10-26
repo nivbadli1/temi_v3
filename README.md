@@ -10,11 +10,9 @@ residents and their families using temi robot that calls their families automati
 
 > Features
 
-- `Bootstrap 5 Design`: **[Argon Dashboard](https://www.creative-tim.com/product/argon-dashboard?AFFILIATE=128200)**
-- `Up-to-date dependencies`
-- `DB Tools`: SQLAlchemy ORM, Flask-Migrate (schema migrations) , Pandas 
+- `Bootstrap 5 Design`
+- `DB Tools`: SQLAlchemy ORM, Flask-Migrate (schema migrations), Pandas, Numpy, Streamlit
 - Session-Based authentication (via **flask_login**), Forms validation
-- python package for controlling temi robot 
 - Google Calendar Api integration
 - Pytemi package for controlling temi robot by using websocket protocol
 <br />
