@@ -1,4 +1,5 @@
-
+import sys
+sys.path.append("/opt/gitshit/temi_v3/")
 from apps.core import util as U
 from apps.dashboards import dashboard_utils as SU
 from apps.authentication.models import Event, Contact, Patient, Users
