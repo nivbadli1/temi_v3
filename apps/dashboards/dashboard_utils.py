@@ -1,3 +1,5 @@
+import sys
+sys.path.append("/opt/gitshit/temi_v3/")
 import datetime as dt
 import pandas as pd
 # from apps.dashboards import dashboard_app as D
