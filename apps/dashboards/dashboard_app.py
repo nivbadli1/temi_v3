@@ -50,7 +50,7 @@ def add_logo(logo_path, width, height):
     modified_logo = logo.resize((width, height))
     return modified_logo
 
-my_logo = add_logo(logo_path=r"C:\Users\User\PycharmProjects\temi_v3\apps\static\assets\img\logo-ct-dark2.jpeg", width=50, height=60)
+my_logo = add_logo(logo_path=r"/opt/gitshit/temi_v3/apps/static/assets/img/logo-ct-dark2.jpeg", width=50, height=60)
 
 
 
